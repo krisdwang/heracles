@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:jdbc="http://www.springframework.org/schema/jdbc"  
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:heracles-context="http://doeasy.io/schema/context" xmlns:heracles-datasource="http://doeasy.io/schema/datasource"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.6.xsd
+		http://doeasy.io/schema/context http://doeasy.io/schema/context/heracles-context-1.0.0.xsd
+		http://doeasy.io/schema/datasource http://doeasy.io/schema/datasource/heracles-datasource-1.0.0.xsd"
+	default-lazy-init="true">
+	
+	<heracles-context:property-placeholder config-path="/datasource.xml" ignore-unresolvable="true" ignore-resource-not-found="true" use-cfgcenter="false">
+		<heracles-context:property-handlers>	
+			<bean class="heracles.core.context.TestHandler" id="handler"/>	
+			<ref bean="handler2"/>
+			<heracles-context:handlers-scan base-package="heracles.core.context.**"/>			
+		</heracles-context:property-handlers>
+	</heracles-context:property-placeholder>
+	
+	<bean class="heracles.core.context.TestHandler" id="handler2"/>
+	
+</beans>

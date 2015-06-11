@@ -1,0 +1,20 @@
+<cfgdef group="io.doeasy" name="predefinedCfgDef" version="1.0.0">
+	<itemgroup name="all">
+		<item name="配置中心连接字符串" key="heracles.cfgcenter.zkclient.connection"
+			defaultValue="" dataType="string" desc="连接url" hotReload="false" />
+		<item name="重试间隔时间" key="heracles.cfgcenter.zkclient.baseSleepTimeMs"
+			defaultValue="10000" dataType="integer" desc="重试间隔时间" hotReload="false" />
+		<item name="最大重试次数" key="heracles.cfgcenter.zkclient.maxRetries"
+			defaultValue="3" dataType="integer" desc="最大重试次数" hotReload="false" />
+		<item name="连接超时时间" key="heracles.cfgcenter.zkclient.connectionTimeoutMs"
+			defaultValue="50000" dataType="integer" desc="连接超时时间" hotReload="false" />
+		<item name="session超时时间" key="heracles.cfgcenter.zkclient.sessionTimeoutMs"
+			defaultValue="100000" dataType="integer" desc="session超时时间"
+			hotReload="false" />
+		<item name="mysql配置路径" key="heracles.cfgcenter.resource.rdbms.mysql.logicnames"
+			defaultValue="" dataType="string" desc="session超时时间" hotReload="false" />
+		<item name="appname" key="appname" defaultValue="" dataType="string"
+			desc="appname" hotReload="false" />
+	</itemgroup>
+</cfgdef>
+

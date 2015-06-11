@@ -1,0 +1,10 @@
+<beans>
+	<heracles-datasource:jdbc-matrix id="dataSource">
+		<heracles-datasource:readWriteDataSource name="cfgcenterRW">
+			<heracles-datasource:writeDataSource dbType="mysql" logicName="cfgcenter" />
+		</heracles-datasource:readWriteDataSource>
+		<heracles-datasource:readWriteDataSource name="cfgcenterRW">
+			<heracles-datasource:writeDataSource logicName="cfgcenter" />
+		</heracles-datasource:readWriteDataSource>
+	</heracles-datasource:jdbc-matrix>
+</beans>
