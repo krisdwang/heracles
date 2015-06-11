@@ -1,0 +1,1 @@
+package heracles.jdbc.common.param;import java.io.InputStream;import java.sql.PreparedStatement;import java.sql.SQLException;public class SetBlob2Handler implements ParameterHandler {	@Override	public void setParameter(PreparedStatement stmt, Object[] args) throws SQLException {		stmt.setBlob((Integer) args[0], (InputStream) args[1]);	}}

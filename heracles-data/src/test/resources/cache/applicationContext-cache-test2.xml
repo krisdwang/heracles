@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:heracles-context="http://doeasy.io/schema/context" 
+	xmlns:heracles-cache="http://doeasy.io/schema/cache"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://doeasy.io/schema/context http://doeasy.io/schema/context/heracles-context-1.0.0.xsd		
+		http://doeasy.io/schema/cache http://doeasy.io/schema/cache/heracles-cache-1.0.0.xsd"
+	default-lazy-init="true">
+	
+	<heracles-context:property-placeholder ignore-resource-not-found="true" location="classpath:/properties/application.properties">
+	</heracles-context:property-placeholder>		
+	
+	<heracles-cache:cache-manager name="redisCacheManager">
+		<heracles-cache:caches>
+			<heracles-cache:cache-cluster name="orderCacheCluster" cluster-name="redis-cluster-01" type="redis" template-name="orderCacheClusterRedisTemplate">
+				<heracles-cache:pool-config>
+					<property name="maxTotal" value="200" />
+					<property name="maxIdle" value="50" />
+					<property name="timeBetweenEvictionRunsMillis" value="30000" />
+					<property name="minEvictableIdleTimeMillis" value="30000" />
+					<property name="maxWaitMillis" value="30000" />
+				</heracles-cache:pool-config>
+			</heracles-cache:cache-cluster>
+			
+			<heracles-cache:cache-cluster name="tradeCacheCluster" cluster-name="redis-cluster-01" type="redis" template-name="tradeCacheClusterRedisTemplate">
+				<heracles-cache:pool-config>
+				</heracles-cache:pool-config>
+			</heracles-cache:cache-cluster>
+			
+			<heracles-cache:cache-cluster name="redis-cluster-01" type="redis" >
+			</heracles-cache:cache-cluster>
+			<!-- 
+			<bean class="org.springframework.cache.concurrent.ConcurrentMapCacheManager">
+				<constructor-arg>
+					<array>
+						<value>orderCacheCluster</value>
+						<value>tradeCacheCluster</value>
+						<value>productCacheCluster</value>
+					</array>
+				</constructor-arg>
+			</bean>
+			<bean id="cacheManager"
+	      		class="org.springframework.cache.ehcache.EhCacheCacheManager">
+	      		<property name="cacheManager" ref="ehcache" />
+	      	</bean>
+			-->
+		</heracles-cache:caches>
+	</heracles-cache:cache-manager>
+	
+	<!-- 
+	<bean id="ehcache"
+		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+		<property name="configLocation" value="classpath:ehcache.xml" />
+	</bean>
+	-->
+
+	<alias name="redisCacheManager" alias="cacheManager"/>
+	
+	<bean id="demoService" class="heracles.data.cache.service.DemoService"></bean>
+
+</beans>

@@ -1,0 +1,528 @@
+package heracles.jdbc.atom;
+
+import heracles.jdbc.common.exception.ExceptionUtils;
+import heracles.jdbc.common.rs.MergeResultSet;
+import heracles.jdbc.executor.merge.MergeExecutor;
+import heracles.jdbc.parser.Parser;
+import heracles.jdbc.parser.common.ShardingType;
+import heracles.jdbc.parser.exception.SQLParserException;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
+
+public class AtomStatement implements Statement {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(AtomStatement.class);
+
+	protected AtomConnection atomConnection;
+
+	protected Parser parser = null;
+
+	protected boolean closed;
+	protected boolean readOnly;
+	protected boolean autoCommit = true;
+	protected int resultSetType = -1;
+	protected int resultSetConcurrency = -1;
+	protected int resultSetHoldability = -1;
+	protected Set<ResultSet> attachedResultSets = new HashSet<ResultSet>();
+	protected List<Statement> actualStatements = new ArrayList<Statement>();
+	protected ResultSet resultSet;
+	protected boolean moreResults;
+	protected int updateCount;
+	protected int queryTimeout = 0;
+	protected MergeExecutor mergeExecutor = new MergeExecutor();
+
+	protected int fetchSize;
+
+	protected int maxRows;
+
+	public AtomStatement(AtomConnection atomConnection) throws SQLException {
+		this.atomConnection = atomConnection;
+	}
+
+	public AtomConnection getAtomConnection() {
+		return atomConnection;
+	}
+
+	public void setAtomConnection(AtomConnection atomConnection) {
+		this.atomConnection = atomConnection;
+	}
+
+	public boolean isReadOnly() {
+		return readOnly;
+	}
+
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
+	}
+
+	public boolean isAutoCommit() {
+		return autoCommit;
+	}
+
+	public void setAutoCommit(boolean autoCommit) {
+		this.autoCommit = autoCommit;
+	}
+
+	public void setResultSetType(int resultSetType) {
+		this.resultSetType = resultSetType;
+	}
+
+	public void setResultSetHoldability(int resultSetHoldability) {
+		this.resultSetHoldability = resultSetHoldability;
+	}
+
+	public void setResultSetConcurrency(int resultSetConcurrency) {
+		this.resultSetConcurrency = resultSetConcurrency;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T unwrap(Class<T> iface) throws SQLException {
+		try {
+			return (T) this;
+		} catch (Exception e) {
+			throw new SQLException(e);
+		}
+	}
+
+	@Override
+	public boolean isWrapperFor(Class<?> iface) throws SQLException {
+		return this.getClass().isAssignableFrom(iface);
+	}
+
+	private Statement _createStatement(Connection connection) throws SQLException {
+		Statement statement;
+		if (this.resultSetType != -1 && this.resultSetConcurrency != -1 && this.resultSetHoldability != -1) {
+			statement = connection.createStatement(this.resultSetType, this.resultSetConcurrency,
+					this.resultSetHoldability);
+		} else if (this.resultSetType != -1 && this.resultSetConcurrency != -1) {
+			statement = connection.createStatement(this.resultSetType, this.resultSetConcurrency);
+		} else {
+			statement = connection.createStatement();
+		}
+		return statement;
+	}
+
+	@Override
+	public ResultSet executeQuery(String sql) throws SQLException {
+		checkClosed();
+		checkParsed(sql);
+
+		parser.eval(null, ShardingType.TABLE);
+		String[] targetSqls = parser.getShardingSQLs();
+		Assert.notEmpty(targetSqls);
+
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("AtomStatement executeQuery: this sql split to " + targetSqls.length);
+		}
+
+		List<ResultSet> resultSets = new ArrayList<ResultSet>();
+		try {
+			Connection conn = this.getAtomConnection().getTargetConnection();
+			conn.setAutoCommit(isAutoCommit());
+
+			for (String targetSql : targetSqls) {
+				Statement targetStatement = _createStatement(conn);
+				atomConnection.setTargetConnection(conn);
+				atomConnection.getTargetStatements().add(targetStatement);
+				ResultSet resultSet = targetStatement.executeQuery(targetSql);
+				attachedResultSets.add(resultSet);
+				resultSets.add(resultSet);
+
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("AtomStatement executeQuery: the targetSql is [" + targetSql
+							+ "];  number of result rows: " + resultSet.getRow());
+				}
+			}
+		} catch (Exception e) {
+			throw new SQLException(e);
+		}
+
+		MergeResultSet mergeResultSet = mergeExecutor.merge(resultSets.toArray(new ResultSet[resultSets.size()]),
+				parser.getParserResult().getStatement());
+
+		this.moreResults = false;
+		this.updateCount = -1;
+		this.resultSet = new AtomResultSet(mergeResultSet.getResultSet());
+		return this.resultSet;
+	}
+
+	private int _executeUpdate(String sql, int autoGeneratedKeys, int[] columnIndexes, String[] columnNames)
+			throws SQLException {
+		checkClosed();
+		checkParsed(sql);
+
+		int affectedRows = 0;
+
+		parser.eval(null, ShardingType.TABLE);
+		String[] targetSqls = parser.getShardingSQLs();
+
+		try {
+			Connection conn = this.getAtomConnection().getTargetConnection();
+			conn.setAutoCommit(isAutoCommit());
+
+			Statement targetStatement = null;
+
+			if (ArrayUtils.isNotEmpty(targetSqls)) {
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("AtomStatement _executeUpdate: this sql split to " + targetSqls.length);
+				}
+				for (String targetSql : targetSqls) {
+					if (targetStatement == null) {
+						targetStatement = _createStatement(conn);
+					}
+					targetStatement.addBatch(targetSql);
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("AtomStatement _executeUpdate: the targetSql is [" + targetSql + "]");
+					}
+				}
+				atomConnection.setTargetConnection(conn);
+				atomConnection.getTargetStatements().add(targetStatement);
+
+				int[] rows = targetStatement.executeBatch();
+				if (ArrayUtils.isNotEmpty(rows)) {
+					for (int row : rows) {
+						affectedRows += row;
+					}
+				}
+			}
+		} catch (Exception e) {
+			throw new SQLException(e);
+		}
+
+		this.resultSet = null;
+		this.moreResults = false;
+		this.updateCount = affectedRows;
+
+		return affectedRows;
+	}
+
+	@Override
+	public int executeUpdate(String sql) throws SQLException {
+		return _executeUpdate(sql, -1, null, null);
+	}
+
+	@Override
+	public int executeUpdate(String sql, int autoGeneratedKeys) throws SQLException {
+		return _executeUpdate(sql, autoGeneratedKeys, null, null);
+	}
+
+	@Override
+	public int executeUpdate(String sql, int[] columnIndexes) throws SQLException {
+		return _executeUpdate(sql, -1, columnIndexes, null);
+	}
+
+	@Override
+	public int executeUpdate(String sql, String[] columnNames) throws SQLException {
+		return _executeUpdate(sql, -1, null, columnNames);
+	}
+
+	@Override
+	public void close() throws SQLException {
+		if (closed) {
+			return;
+		}
+
+		try {
+			List<SQLException> sqlExceptions = new ArrayList<SQLException>();
+
+			for (ResultSet resultSet : attachedResultSets) {
+				try {
+					resultSet.close();
+				} catch (SQLException e) {
+					sqlExceptions.add(e);
+				}
+			}
+
+			for (Statement stmt : actualStatements) {
+				try {
+					stmt.close();
+				} catch (SQLException e) {
+					sqlExceptions.add(e);
+				}
+			}
+
+			ExceptionUtils.throwSQLExceptions(LOGGER, sqlExceptions);
+		} finally {
+			closed = true;
+			attachedResultSets.clear();
+			actualStatements.clear();
+			resultSet = null;
+		}
+	}
+
+	@Override
+	public int getMaxFieldSize() throws SQLException {
+		throw new UnsupportedOperationException("getMaxFieldSize");
+	}
+
+	@Override
+	public void setMaxFieldSize(int max) throws SQLException {
+		throw new UnsupportedOperationException("setMaxFieldSize");
+	}
+
+	@Override
+	public int getMaxRows() throws SQLException {
+		return this.maxRows;
+	}
+
+	@Override
+	public void setMaxRows(int maxRows) throws SQLException {
+		this.maxRows = maxRows;
+	}
+
+	@Override
+	public void setEscapeProcessing(boolean enable) throws SQLException {
+		throw new UnsupportedOperationException("setEscapeProcessing");
+	}
+
+	@Override
+	public int getQueryTimeout() throws SQLException {
+		return this.queryTimeout;
+	}
+
+	@Override
+	public void setQueryTimeout(int queryTimeout) throws SQLException {
+		this.queryTimeout = queryTimeout;
+	}
+
+	@Override
+	public void cancel() throws SQLException {
+		throw new UnsupportedOperationException("cancel");
+	}
+
+	@Override
+	public SQLWarning getWarnings() throws SQLException {
+		return null;
+	}
+
+	@Override
+	public void clearWarnings() throws SQLException {
+	}
+
+	@Override
+	public void setCursorName(String name) throws SQLException {
+		throw new UnsupportedOperationException("setCursorName");
+	}
+
+	@Override
+	public boolean execute(String sql) throws SQLException {
+		return _execute(sql, -1, null, null);
+	}
+
+	@Override
+	public boolean execute(String sql, int autoGeneratedKeys) throws SQLException {
+		return _execute(sql, autoGeneratedKeys, null, null);
+	}
+
+	@Override
+	public boolean execute(String sql, int[] columnIndexes) throws SQLException {
+		return _execute(sql, -1, columnIndexes, null);
+	}
+
+	@Override
+	public boolean execute(String sql, String[] columnNames) throws SQLException {
+		return _execute(sql, -1, null, columnNames);
+	}
+
+	@Override
+	public ResultSet getResultSet() throws SQLException {
+		return this.resultSet;
+	}
+
+	@Override
+	public int getUpdateCount() throws SQLException {
+		return this.updateCount;
+	}
+
+	@Override
+	public boolean getMoreResults() throws SQLException {
+		return this.moreResults;
+	}
+
+	@Override
+	public void setFetchDirection(int direction) throws SQLException {
+		throw new UnsupportedOperationException("setFetchDirection");
+	}
+
+	@Override
+	public int getFetchDirection() throws SQLException {
+		throw new UnsupportedOperationException("getFetchDirection");
+	}
+
+	@Override
+	public void setFetchSize(int fetchSize) throws SQLException {
+		this.fetchSize = fetchSize;
+	}
+
+	@Override
+	public int getFetchSize() throws SQLException {
+		return this.fetchSize;
+	}
+
+	@Override
+	public int getResultSetConcurrency() throws SQLException {
+		return resultSetConcurrency;
+	}
+
+	@Override
+	public int getResultSetType() throws SQLException {
+		return resultSetType;
+	}
+
+	/*
+	 * ======================================================================== executeBatch
+	 * ======================================================================
+	 */
+	protected List<String> batchedArgs;
+
+	@Override
+	public void addBatch(String sql) throws SQLException {
+		checkClosed();
+		if (batchedArgs == null) {
+			batchedArgs = new LinkedList<String>();
+		}
+		if (sql != null) {
+			batchedArgs.add(sql);
+		}
+	}
+
+	@Override
+	public void clearBatch() throws SQLException {
+		checkClosed();
+		if (batchedArgs != null) {
+			batchedArgs.clear();
+		}
+	}
+
+	@Override
+	public int[] executeBatch() throws SQLException {
+		try {
+			checkClosed();
+
+			if (batchedArgs == null || batchedArgs.isEmpty()) {
+				return new int[0];
+			}
+
+			Connection conn = this.getAtomConnection().getTargetConnection();
+			conn.setAutoCommit(isAutoCommit());
+
+			return executeBatchOnConnection(conn, this.batchedArgs);
+		} finally {
+			if (batchedArgs != null)
+				batchedArgs.clear();
+		}
+	}
+
+	private int[] executeBatchOnConnection(Connection conn, List<String> batchedSqls) throws SQLException {
+		Statement stmt = _createStatement(conn);
+		for (String sql : batchedSqls) {
+			stmt.addBatch(sql);
+		}
+		return stmt.executeBatch();
+	}
+
+	/*
+	 * ======================================================================== END
+	 * ======================================================================
+	 */
+
+	@Override
+	public Connection getConnection() throws SQLException {
+		return this.atomConnection;
+	}
+
+	@Override
+	public boolean getMoreResults(int current) throws SQLException {
+		throw new UnsupportedOperationException("getMoreResults");
+	}
+
+	@Override
+	public ResultSet getGeneratedKeys() throws SQLException {
+		throw new UnsupportedOperationException("getGeneratedKeys");
+	}
+
+	@Override
+	public int getResultSetHoldability() throws SQLException {
+		return resultSetHoldability;
+	}
+
+	@Override
+	public boolean isClosed() throws SQLException {
+		throw new UnsupportedOperationException("isClosed");
+	}
+
+	@Override
+	public void setPoolable(boolean poolable) throws SQLException {
+		throw new UnsupportedOperationException("setPoolable");
+	}
+
+	@Override
+	public boolean isPoolable() throws SQLException {
+		throw new UnsupportedOperationException("isPoolable");
+	}
+
+	@Override
+	public void closeOnCompletion() throws SQLException {
+		throw new UnsupportedOperationException("closeOnCompletion");
+	}
+
+	@Override
+	public boolean isCloseOnCompletion() throws SQLException {
+		throw new UnsupportedOperationException("isCloseOnCompletion");
+	}
+
+	protected void checkClosed() throws SQLException {
+		if (closed) {
+			throw new SQLException();
+		}
+	}
+
+	private boolean _execute(String sql, int autoGeneratedKeys, int[] columnIndexes, String[] columnNames)
+			throws SQLException {
+		checkClosed();
+		checkParsed(sql);
+
+		switch (parser.getParserResult().getType()) {
+		case SELECT:
+			executeQuery(sql);
+			return true;
+		case DELETE:
+		case INSERT:
+		case UPDATE:
+			if (autoGeneratedKeys == -1 && columnIndexes == null && columnNames == null) {
+				executeUpdate(sql);
+			} else if (autoGeneratedKeys != -1) {
+				executeUpdate(sql, autoGeneratedKeys);
+			} else if (columnIndexes != null) {
+				executeUpdate(sql, columnIndexes);
+			} else if (columnNames != null) {
+				executeUpdate(sql, columnNames);
+			} else {
+				executeUpdate(sql);
+			}
+			return false;
+		default:
+			throw new SQLParserException("AtomStatement _execute:not support this sql : " + sql + ";statement type is "
+					+ parser.getParserResult().getType());
+		}
+	}
+
+	protected void checkParsed(String sql) {
+		parser = new Parser(sql, this.atomConnection.getAtomDataSource().getRules());
+	}
+}

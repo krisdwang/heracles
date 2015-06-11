@@ -1,0 +1,13 @@
+DROP DATABASE db1_master;
+DROP DATABASE db1_slave1;
+DROP DATABASE db1_slave2;
+
+DROP DATABASE db2_master;
+DROP DATABASE db2_slave1;
+DROP DATABASE db2_slave2;
+
+DROP DATABASE db3_master;
+DROP DATABASE db3_slave1;
+DROP DATABASE db3_slave2;
+
+DROP USER 'readonly';

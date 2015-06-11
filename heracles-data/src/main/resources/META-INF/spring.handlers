@@ -1,0 +1,2 @@
+http\://doeasy.io/schema/datasource=heracles.data.spring.JdbcMatrixNamespaceHandlerSupport
+http\://doeasy.io/schema/cache=heracles.data.cache.spring.HeraclesCacheNamespaceHandler

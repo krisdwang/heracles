@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns="http://doeasy.io/schema/datasource"  
+	elementFormDefault="qualified"
+	targetNamespace="http://doeasy.io/schema/datasource">
+	<xs:element name="writeDataSource">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="logicName" use="required" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="readDataSource">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="logicName" use="required" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="readWriteDataSource">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="writeDataSource"/>
+				<xs:element ref="readDataSource" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="weight" type="xs:string"/>
+			<xs:attribute name="loadBalance" default="roundRobin">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="random"/>
+						<xs:enumeration value="roundRobin"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="name" use="required" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="property">
+		<xs:complexType>
+			<xs:attribute name="value" use="required" type="xs:string"/>
+			<xs:attribute name="name" use="required" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="tableSharding">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="beanName" minOccurs="1" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="strategiesPackage" use="required" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="repositorySharding">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="beanName" minOccurs="1" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="strategiesPackage" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="jdbc-matrix">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="readWriteDataSource" minOccurs="1" maxOccurs="unbounded"/>
+				<xs:element ref="repositorySharding" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="tableSharding" minOccurs="0" maxOccurs="1"/>
+			</xs:sequence>
+			<xs:attribute name="id" use="required" type="xs:ID"/>
+			<xs:attribute name="transactionManager" type="xs:string" default="transactionManager"/>
+			<xs:attribute name="myBatisSqlSessionFactory" type="xs:string" default="myBatisSqlSessionFactory"/>
+			<xs:attribute name="dsType" default="c3p0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="druid"/>
+						<xs:enumeration value="dbcp"/>
+						<xs:enumeration value="c3p0"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="dbType" default="mysql">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="mysql"/>
+						<xs:enumeration value="oracle"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="beanName">
+		<xs:complexType>
+			<xs:attribute name="value" use="required" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="pool-config">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="atom-names" use="required" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="pool-configs">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="pool-config" minOccurs="1" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="pool-type" default="c3p0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="druid"/>
+						<xs:enumeration value="dbcp"/>
+						<xs:enumeration value="c3p0"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="table-sharding">
+		<xs:complexType>
+			<xs:attribute name="strategies-package" use="required" type="xs:string"/>
+			<xs:attribute name="order" type="xs:string"/>	
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="repository-sharding">
+		<xs:complexType>
+			<xs:attribute name="strategies-package" type="xs:string"/>
+			<xs:attribute name="order" type="xs:string"/>			
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="matrix-datasource">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="pool-configs" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="repository-sharding" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="table-sharding" minOccurs="0" maxOccurs="1"/>
+			</xs:sequence>
+			<xs:attribute name="matrix-name" use="required" type="xs:string"/>
+			<xs:attribute name="transactionManager" type="xs:string" default="transactionManager"/>
+			<xs:attribute name="myBatisSqlSessionFactory" type="xs:string" default="myBatisSqlSessionFactory"/>
+		</xs:complexType>
+	</xs:element>	
+	
+</xs:schema>

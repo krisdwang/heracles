@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:heracles-datasource="http://doeasy.io/schema/datasource"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-4.0.xsd 
+		http://www.springframework.org/schema/util 
+		http://www.springframework.org/schema/util/spring-util-4.0.xsd
+		http://doeasy.io/schema/datasource
+		http://doeasy.io/schema/datasource/heracles-datasource-1.0.0.xsd"
+	default-autowire="byName">
+	
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath*:config_mysql_new.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="orikaBeanMapper" class="heracles.core.beans.mapping.orika.OrikaBeanMapper">
+		<property name="basePackage" value="heracles.data.**"></property>
+	</bean>
+	
+	<bean id="transactionManager" class="heracles.data.datasource.SmartDataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="myBatisSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="typeAliasesPackage" value="heracles.data.mybatis.entity" />
+		<property name="mapperLocations" value="classpath*:heracles/data/mybatis/mapper/*Mapper.xml" />
+	</bean> 
+	
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="heracles.data.mybatis.repository" />
+		<property name="annotationClass" value="org.springframework.stereotype.Repository" /> 
+	</bean>
+
+	<heracles-datasource:jdbc-matrix id="dataSource">
+		<heracles-datasource:readWriteDataSource name="rwds1">
+			<heracles-datasource:writeDataSource logicName="write01" />
+			<heracles-datasource:readDataSource logicName="read101" />
+			<heracles-datasource:readDataSource logicName="read102" />
+		</heracles-datasource:readWriteDataSource>
+		<heracles-datasource:readWriteDataSource name="rwds2"> 
+			<heracles-datasource:writeDataSource logicName="write02" />
+			<heracles-datasource:readDataSource logicName="read201" />
+			<heracles-datasource:readDataSource logicName="read202" />
+		</heracles-datasource:readWriteDataSource>
+		<heracles-datasource:readWriteDataSource name="rwds3">
+			<heracles-datasource:writeDataSource logicName="write03" />
+			<heracles-datasource:readDataSource logicName="read301" />
+			<heracles-datasource:readDataSource logicName="read302" /> 
+		</heracles-datasource:readWriteDataSource>
+		<heracles-datasource:repositorySharding strategiesPackage="heracles.data.common.strategy.repository">
+			<heracles-datasource:beanName value="*Service" />
+		</heracles-datasource:repositorySharding> 
+		<heracles-datasource:tableSharding strategiesPackage="heracles.data.common.strategy.table">
+			<heracles-datasource:beanName value="*Mapper" />
+		</heracles-datasource:tableSharding> 
+	</heracles-datasource:jdbc-matrix>
+	
+	<context:annotation-config />
+
+	<context:component-scan base-package="heracles.data.mybatis.service" />
+	<context:component-scan base-package="heracles.data.mybatis.dao" />
+
+	<bean id="uuidUniqueId" class="heracles.data.common.id.impl.UUIDUniqueId" />
+	<bean id="shardingKey" class="heracles.data.common.id.impl.ShardingKeyImpl" />
+
+</beans>

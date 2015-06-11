@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="heracles.data.mybatis.repository.VlashPermissionRepository" >
+  <resultMap id="BaseResultMap" type="heracles.data.mybatis.entity.VlashPermission" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="perm_action" property="permAction" jdbcType="VARCHAR" />
+    <result column="rel" property="rel" jdbcType="VARCHAR" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="perm_code" property="permCode" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="createName" property="createname" jdbcType="VARCHAR" />
+    <result column="updateTime" property="updatetime" jdbcType="TIMESTAMP" />
+    <result column="updateName" property="updatename" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, parent_id, name, perm_action, rel, sort, perm_code, status, createTime, createName, 
+    updateTime, updateName
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_vlash_permission
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_vlash_permission
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="heracles.data.mybatis.entity.VlashPermission" >
+    insert into t_vlash_permission (id, parent_id, name, 
+      perm_action, rel, sort, 
+      perm_code, status, createTime, 
+      createName, updateTime, updateName
+      )
+    values (#{id,jdbcType=INTEGER}, #{parentId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
+      #{permAction,jdbcType=VARCHAR}, #{rel,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER}, 
+      #{permCode,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{createtime,jdbcType=TIMESTAMP}, 
+      #{createname,jdbcType=VARCHAR}, #{updatetime,jdbcType=TIMESTAMP}, #{updatename,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="heracles.data.mybatis.entity.VlashPermission" >
+    insert into t_vlash_permission
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="permAction != null" >
+        perm_action,
+      </if>
+      <if test="rel != null" >
+        rel,
+      </if>
+      <if test="sort != null" >
+        sort,
+      </if>
+      <if test="permCode != null" >
+        perm_code,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createtime != null" >
+        createTime,
+      </if>
+      <if test="createname != null" >
+        createName,
+      </if>
+      <if test="updatetime != null" >
+        updateTime,
+      </if>
+      <if test="updatename != null" >
+        updateName,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="parentId != null" >
+        #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="permAction != null" >
+        #{permAction,jdbcType=VARCHAR},
+      </if>
+      <if test="rel != null" >
+        #{rel,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="permCode != null" >
+        #{permCode,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createname != null" >
+        #{createname,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatename != null" >
+        #{updatename,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="heracles.data.mybatis.entity.VlashPermission" >
+    update t_vlash_permission
+    <set >
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="permAction != null" >
+        perm_action = #{permAction,jdbcType=VARCHAR},
+      </if>
+      <if test="rel != null" >
+        rel = #{rel,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null" >
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="permCode != null" >
+        perm_code = #{permCode,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="createtime != null" >
+        createTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createname != null" >
+        createName = #{createname,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatename != null" >
+        updateName = #{updatename,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="heracles.data.mybatis.entity.VlashPermission" >
+    update t_vlash_permission
+    set parent_id = #{parentId,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      perm_action = #{permAction,jdbcType=VARCHAR},
+      rel = #{rel,jdbcType=VARCHAR},
+      sort = #{sort,jdbcType=INTEGER},
+      perm_code = #{permCode,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      createName = #{createname,jdbcType=VARCHAR},
+      updateTime = #{updatetime,jdbcType=TIMESTAMP},
+      updateName = #{updatename,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectCount" resultType="java.lang.Integer" parameterType="heracles.data.mybatis.entity.VlashPermission" >
+    select count(*) from t_vlash_permission
+    <where >
+      <if test="id != null" >
+        and id = #{id,jdbcType=INTEGER}
+      </if>
+      <if test="parentId != null" >
+        and parent_id = #{parentId,jdbcType=INTEGER}
+      </if>
+      <if test="name != null" >
+        and name = #{name,jdbcType=VARCHAR}
+      </if>
+      <if test="permAction != null" >
+        and perm_action = #{permAction,jdbcType=VARCHAR}
+      </if>
+      <if test="rel != null" >
+        and rel = #{rel,jdbcType=VARCHAR}
+      </if>
+      <if test="sort != null" >
+        and sort = #{sort,jdbcType=INTEGER}
+      </if>
+      <if test="permCode != null" >
+        and perm_code = #{permCode,jdbcType=VARCHAR}
+      </if>
+      <if test="status != null" >
+        and status = #{status,jdbcType=TINYINT}
+      </if>
+      <if test="createtime != null" >
+        and createTime = #{createtime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="createname != null" >
+        and createName = #{createname,jdbcType=VARCHAR}
+      </if>
+      <if test="updatetime != null" >
+        and updateTime = #{updatetime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="updatename != null" >
+        and updateName = #{updatename,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+  <select id="selectPage" parameterType="heracles.data.mybatis.entity.VlashPermission" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_vlash_permission where 1 = 1 
+    <if test="param1.id != null" >
+      and id = #{param1.id,jdbcType=INTEGER}
+    </if>
+    <if test="param1.parentId != null" >
+      and parent_id = #{param1.parentId,jdbcType=INTEGER}
+    </if>
+    <if test="param1.name != null" >
+      and name = #{param1.name,jdbcType=VARCHAR}
+    </if>
+    <if test="param1.permAction != null" >
+      and perm_action = #{param1.permAction,jdbcType=VARCHAR}
+    </if>
+    <if test="param1.rel != null" >
+      and rel = #{param1.rel,jdbcType=VARCHAR}
+    </if>
+    <if test="param1.sort != null" >
+      and sort = #{param1.sort,jdbcType=INTEGER}
+    </if>
+    <if test="param1.permCode != null" >
+      and perm_code = #{param1.permCode,jdbcType=VARCHAR}
+    </if>
+    <if test="param1.status != null" >
+      and status = #{param1.status,jdbcType=TINYINT}
+    </if>
+    <if test="param1.createtime != null" >
+      and createTime = #{param1.createtime,jdbcType=TIMESTAMP}
+    </if>
+    <if test="param1.createname != null" >
+      and createName = #{param1.createname,jdbcType=VARCHAR}
+    </if>
+    <if test="param1.updatetime != null" >
+      and updateTime = #{param1.updatetime,jdbcType=TIMESTAMP}
+    </if>
+    <if test="param1.updatename != null" >
+      and updateName = #{param1.updatename,jdbcType=VARCHAR}
+    </if>
+    <if test="param2.sort != null" >
+      order by 
+      <foreach collection="param2.sort" item="order" separator="," >
+        ${order.property} ${order.direction}
+      </foreach>
+    </if>
+    <if test="param2.offset >= 0 and param2.pageSize > 0" >
+      limit ${param2.offset}, ${param2.pageSize}
+    </if>
+  </select>
+</mapper>

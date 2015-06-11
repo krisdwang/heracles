@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2013 (http://www.altova.com) by  () -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://doeasy.io/schema/cache" xmlns:spring-beans="http://www.springframework.org/schema/beans" targetNamespace="http://doeasy.io/schema/cache" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans-4.0.xsd"/>
+	<xs:element name="cache-manager">
+		<xs:annotation>
+			<xs:documentation>root element for heracles cache manager</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="caches" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="serializer-config" minOccurs="0"/>
+							<xs:element ref="cache-cluster" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element ref="spring-beans:bean" minOccurs="0" maxOccurs="unbounded"/>
+							<xs:element ref="spring-beans:ref" minOccurs="0" maxOccurs="unbounded"/>
+						</xs:sequence>
+						<xs:attribute name="key-prefix" type="xs:string"/>
+						<xs:attribute name="expiration" type="xs:long"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="cache-cluster">
+		<xs:complexType>
+			<xs:all>
+				<xs:element ref="pool-config" minOccurs="0"/>
+				<xs:element ref="serializer-config" minOccurs="0"/>
+			</xs:all>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="cluster-name" type="xs:string"/>
+			<xs:attribute name="type" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="redis"/>
+						<xs:enumeration value="memcached"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="key-prefix" type="xs:string"/>
+			<xs:attribute name="expiration" type="xs:long"/>
+			<xs:attribute name="template-name" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="pool-config">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="spring-beans:property" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="serializer-config">
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="key-serializer" type="serializer-type" minOccurs="0"/>
+				<xs:element name="value-serializer" type="serializer-type" minOccurs="0"/>
+				<xs:element name="hashkey-serializer" type="serializer-type" minOccurs="0"/>
+				<xs:element name="hashvalue-serializer" type="serializer-type" minOccurs="0"/>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="serializer-type">
+		<xs:attribute name="type">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="string"/>
+					<xs:enumeration value="jdk"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="class" type="xs:string"/>
+	</xs:complexType>
+</xs:schema>

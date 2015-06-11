@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:heracles-context="http://doeasy.io/schema/context" 
+	xmlns:heracles-datasource="http://doeasy.io/schema/datasource"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-4.0.xsd 
+		http://www.springframework.org/schema/util 
+		http://www.springframework.org/schema/util/spring-util-4.0.xsd
+		http://doeasy.io/schema/context 
+		http://doeasy.io/schema/context/heracles-context-1.0.0.xsd
+		http://doeasy.io/schema/datasource
+		http://doeasy.io/schema/datasource/heracles-datasource-1.0.0.xsd"
+	default-autowire="byName">
+	
+	<heracles-context:property-placeholder ignore-resource-not-found="true" location="classpath:/config_mysql_new.properties,classpath:/properties/application.properties">
+	</heracles-context:property-placeholder>
+	
+	<bean id="orikaBeanMapper" class="heracles.core.beans.mapping.orika.OrikaBeanMapper">
+		<property name="basePackage" value="heracles.data.**"></property>
+	</bean>
+	
+	
+	<bean id="transactionManager1" class="heracles.data.datasource.SmartDataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource1" />
+	</bean>
+	
+	<bean id="myBatisSqlSessionFactory111" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource1" />
+		<property name="typeAliasesPackage" value="heracles.data.mybatis.entity" />
+		<property name="mapperLocations" value="classpath*:heracles/data/mybatis/mapper/*Mapper.xml" />
+	</bean> 
+	
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="heracles.data.mybatis.repository" />
+		<property name="annotationClass" value="org.springframework.stereotype.Repository" /> 
+	</bean>
+	
+	
+    <bean id="serviceResultInterceptor" class="heracles.data.common.interceptor.ServiceResultInterceptor"/>
+	<aop:config>
+			<aop:pointcut expression="execution(* heracles.data.mybatis.service..*.*(..))" id="serviceResultPointcut"/>
+			<aop:advisor advice-ref="serviceResultInterceptor" pointcut-ref="serviceResultPointcut" order="150" />
+	</aop:config>	
+
+	<bean id="serviceResultInterceptor1" class="heracles.data.common.interceptor.ServiceResultInterceptor1"/>
+	<aop:config>
+		<aop:pointcut expression="execution(* heracles.data.mybatis.service..*.*(..))" id="serviceResultPointcut1"/>
+		<aop:advisor advice-ref="serviceResultInterceptor1" pointcut-ref="serviceResultPointcut1"  order="350"/>
+	</aop:config>	
+	
+	<bean id="serviceAroundInterceptor" class="heracles.data.common.interceptor.ServiceAroundInterceptor"/>
+	<aop:config>
+		<aop:aspect id="serviceAroundAspect" ref="serviceAroundInterceptor" order="90">
+			<aop:pointcut expression="execution(* heracles.data.mybatis.service..*.*(..))" id="serviceAroundPointcut"/>
+			<aop:around method="around" pointcut-ref="serviceAroundPointcut"/>
+        </aop:aspect>		
+	</aop:config>		
+
+	
+	<heracles-datasource:matrix-datasource matrix-name="dataSource1" transactionManager="transactionManager1" myBatisSqlSessionFactory="myBatisSqlSessionFactory111">
+		<heracles-datasource:pool-configs pool-type="dbcp">
+			<heracles-datasource:pool-config atom-names="write01,read101">
+				<heracles-datasource:property name="maxIdle" value="30"/>
+			</heracles-datasource:pool-config>
+			<!--  
+			<heracles-datasource:pool-config atom-names="write02">
+				<heracles-datasource:property name="maxIdle" value="30"/>
+			</heracles-datasource:pool-config>	
+			-->			
+		</heracles-datasource:pool-configs>
+		
+		<heracles-datasource:repository-sharding strategies-package="heracles.data.common.strategy.repository" />
+		
+		<heracles-datasource:table-sharding strategies-package="heracles.data.common.strategy.table" />  
+	</heracles-datasource:matrix-datasource>
+	
+	<!-- 
+	<heracles-datasource:allinone-datasource matrix-name="xxx">
+		<heracles-datasource:pool-configs pool-type="C3P0">
+			<heracles-datasource:pool-config atom-names="db1_w, db2_w, db3_r">
+			<property name="maxIdleTime" value="30"/>
+			</heracles-datasource:pool-config>
+		</heracles-datasource:pool-configs>
+	</heracles-datasource:allinone-datasource>
+	 -->
+	<context:annotation-config />
+
+	<context:component-scan base-package="heracles.data.mybatis.service" />
+	<context:component-scan base-package="heracles.data.mybatis.dao" />
+
+	<bean id="uuidUniqueId" class="heracles.data.common.id.impl.UUIDUniqueId" />
+	<bean id="shardingKey" class="heracles.data.common.id.impl.ShardingKeyImpl" />
+
+</beans>

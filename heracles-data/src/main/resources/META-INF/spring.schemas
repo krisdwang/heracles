@@ -1,0 +1,4 @@
+http\://doeasy.io/schema/datasource/heracles-datasource-1.0.0.xsd=heracles/data/datasource/config/heracles-datasource-1.0.0.xsd
+http\://doeasy.io/schema/datasource/heracles-datasource-1.3.0.xsd=heracles/data/datasource/config/heracles-datasource-1.3.0.xsd
+http\://doeasy.io/schema/cache/heracles-cache-1.0.0.xsd=heracles/data/cache/config/heracles-cache-1.0.0.xsd
+http\://doeasy.io/schema/cache/heracles-cache-1.3.0.xsd=heracles/data/cache/config/heracles-cache-1.3.0.xsd

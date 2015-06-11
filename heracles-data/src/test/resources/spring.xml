@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:data="http://www.anders.com/schema/data"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-4.0.xsd 
+		http://www.springframework.org/schema/util 
+		http://www.springframework.org/schema/util/spring-util-4.0.xsd
+		http://www.anders.com/schema/data 
+		http://www.anders.com/schema/data/anders-data-1.0.xsd"
+	default-autowire="byName">
+
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath*:config_mysql.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- group 1 -->
+	<bean id="parentDataSource1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="url" value="${db1.master.url}" />
+		<property name="username" value="${db1.master.username}" />
+		<property name="password" value="${db1.master.password}" />
+		<property name="driverClassName" value="${db1.master.driver}" />
+		<property name="initialSize" value="3" />
+		<property name="minIdle" value="3" />
+		<property name="maxActive" value="5" />
+		<property name="maxWait" value="1000" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<property name="validationQuery" value="SELECT 1 FROM DUAL" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="100" />
+	</bean>
+
+	<!-- <bean id="parentDataSource1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"> <property name="driverClassName" 
+		value="${db1.master.driver}" /> <property name="url" value="${db1.master.url}" /> <property name="username" value="${db1.master.username}" 
+		/> <property name="password" value="${db1.master.password}" /> <property name="maxActive" value="3" /> <property name="maxWait" 
+		value="1000" /> <property name="poolPreparedStatements" value="true" /> <property name="defaultAutoCommit" value="true" /> 
+		</bean> -->
+
+	<bean id="ds1_write" parent="parentDataSource1" />
+
+	<bean id="ds1_read1" destroy-method="close" parent="parentDataSource1">
+		<property name="url" value="${db1.slave1.url}" />
+		<property name="username" value="${db1.slave1.username}" />
+		<property name="password" value="${db1.slave1.password}" />
+	</bean>
+
+	<bean id="ds1_read2" destroy-method="close" parent="parentDataSource1">
+		<property name="url" value="${db1.slave2.url}" />
+		<property name="username" value="${db1.slave2.username}" />
+		<property name="password" value="${db1.slave2.password}" />
+	</bean>
+
+	<!-- group 2 -->
+	<bean id="parentDataSource2" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="url" value="${db2.master.url}" />
+		<property name="username" value="${db2.master.username}" />
+		<property name="password" value="${db2.master.password}" />
+		<property name="driverClassName" value="${db2.master.driver}" />
+		<property name="initialSize" value="3" />
+		<property name="minIdle" value="3" />
+		<property name="maxActive" value="5" />
+		<property name="maxWait" value="1000" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<property name="validationQuery" value="SELECT 1 FROM DUAL" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="100" />
+	</bean>
+
+	<!-- <bean id="parentDataSource2" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"> <property name="driverClassName" 
+		value="${db2.master.driver}" /> <property name="url" value="${db2.master.url}" /> <property name="username" value="${db2.master.username}" 
+		/> <property name="password" value="${db2.master.password}" /> <property name="maxActive" value="3" /> <property name="maxWait" 
+		value="1000" /> <property name="poolPreparedStatements" value="true" /> <property name="defaultAutoCommit" value="true" /> 
+		</bean> -->
+
+	<bean id="ds2_write" parent="parentDataSource2" />
+
+	<bean id="ds2_read1" destroy-method="close" parent="parentDataSource2">
+		<property name="url" value="${db2.slave1.url}" />
+		<property name="username" value="${db2.slave1.username}" />
+		<property name="password" value="${db2.slave1.password}" />
+	</bean>
+
+	<bean id="ds2_read2" destroy-method="close" parent="parentDataSource2">
+		<property name="url" value="${db2.slave2.url}" />
+		<property name="username" value="${db2.slave2.username}" />
+		<property name="password" value="${db2.slave2.password}" />
+	</bean>
+
+	<!-- group 3 -->
+	<bean id="parentDataSource3" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="url" value="${db3.master.url}" />
+		<property name="username" value="${db3.master.username}" />
+		<property name="password" value="${db3.master.password}" />
+		<property name="driverClassName" value="${db3.master.driver}" />
+		<property name="initialSize" value="3" />
+		<property name="minIdle" value="3" />
+		<property name="maxActive" value="5" />
+		<property name="maxWait" value="1000" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<property name="validationQuery" value="SELECT 1 FROM DUAL" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="100" />
+	</bean>
+
+	<!-- <bean id="parentDataSource3" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"> <property name="driverClassName" 
+		value="${db2.master.driver}" /> <property name="url" value="${db2.master.url}" /> <property name="username" value="${db2.master.username}" 
+		/> <property name="password" value="${db2.master.password}" /> <property name="maxActive" value="3" /> <property name="maxWait" 
+		value="1000" /> <property name="poolPreparedStatements" value="true" /> <property name="defaultAutoCommit" value="true" /> 
+		</bean> -->
+
+	<bean id="ds3_write" parent="parentDataSource3" />
+
+	<bean id="ds3_read1" destroy-method="close" parent="parentDataSource3">
+		<property name="url" value="${db3.slave1.url}" />
+		<property name="username" value="${db3.slave1.username}" />
+		<property name="password" value="${db3.slave1.password}" />
+	</bean>
+
+	<bean id="ds3_read2" destroy-method="close" parent="parentDataSource3">
+		<property name="url" value="${db3.slave2.url}" />
+		<property name="username" value="${db3.slave2.username}" />
+		<property name="password" value="${db3.slave2.password}" />
+	</bean>
+
+	<!-- group 1, default -->
+	<bean id="rwds1" class="heracles.data.datasource.ReadWriteDataSource">
+		<property name="targetDataSources">
+			<map key-type="java.lang.String">
+				<entry key="write" value-ref="ds1_write" />
+				<entry key="read01" value-ref="ds1_read1" />
+				<entry key="read02" value-ref="ds1_read2" />
+			</map>
+		</property>
+		<property name="defaultTargetDataSource" ref="ds1_write" />
+		<property name="dataSourceKey" ref="readWriteDataSourceKey1" />
+	</bean>
+
+	<bean id="readWriteDataSourceKey1" class="heracles.data.datasource.ReadWriteDataSourceKey">
+		<property name="readDateSources">
+			<map key-type="java.lang.String">
+				<entry key="read01" value="read01" />
+				<entry key="read02" value="read02" />
+			</map>
+		</property>
+		<property name="writeKey">
+			<value>write</value>
+		</property>
+		<!-- <property name="alwaysReplaceExist" value="false" /> -->
+		<property name="strategy" ref="roundRobinLoadBalanceStrategy1" />
+	</bean>
+
+	<bean id="roundRobinLoadBalanceStrategy1" class="heracles.data.datasource.strategy.RoundRobinLoadBalanceStrategy">
+		<constructor-arg>
+			<map key-type="java.lang.String" value-type="java.lang.Integer">
+				<entry key="read01" value="1" />
+				<entry key="read02" value="1" />
+			</map>
+		</constructor-arg>
+	</bean>
+
+	<!-- group 2 -->
+	<bean id="rwds2" class="heracles.data.datasource.ReadWriteDataSource">
+		<property name="targetDataSources">
+			<map key-type="java.lang.String">
+				<entry key="write" value-ref="ds2_write" />
+				<entry key="read01" value-ref="ds2_read1" />
+				<entry key="read02" value-ref="ds2_read2" />
+			</map>
+		</property>
+		<property name="defaultTargetDataSource" ref="ds2_write" />
+		<property name="dataSourceKey" ref="readWriteDataSourceKey2" />
+	</bean>
+
+	<bean id="readWriteDataSourceKey2" class="heracles.data.datasource.ReadWriteDataSourceKey">
+		<property name="readDateSources">
+			<map key-type="java.lang.String">
+				<entry key="read01" value="read01" />
+				<entry key="read02" value="read02" />
+			</map>
+		</property>
+		<property name="writeKey">
+			<value>write</value>
+		</property>
+		<!-- <property name="alwaysReplaceExist" value="false" /> -->
+		<property name="strategy" ref="randomLoadBalanceStrategy2" />
+	</bean>
+
+	<!-- 
+	<bean id="roundRobinLoadBalanceStrategy2" class="heracles.data.datasource.strategy.RoundRobinLoadBalanceStrategy">
+		<constructor-arg>
+			<map key-type="java.lang.String" value-type="java.lang.Integer">
+				<entry key="read01" value="1" />
+				<entry key="read02" value="1" />
+			</map>
+		</constructor-arg>
+	</bean> 
+	-->
+	
+	<bean id="randomLoadBalanceStrategy2" class="heracles.data.datasource.strategy.RandomLoadBalanceStrategy">
+		<constructor-arg>
+			<list>
+				<value>read01</value>
+				<value>read02</value>
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<!-- group 3 -->
+	<bean id="rwds3" class="heracles.data.datasource.ReadWriteDataSource">
+		<property name="targetDataSources">
+			<map key-type="java.lang.String">
+				<entry key="write" value-ref="ds3_write" />
+				<entry key="read01" value-ref="ds3_read1" />
+				<entry key="read02" value-ref="ds3_read2" />
+			</map>
+		</property>
+		<property name="defaultTargetDataSource" ref="ds3_write" /> 
+		<property name="dataSourceKey" ref="readWriteDataSourceKey3" />
+	</bean>
+
+	<bean id="readWriteDataSourceKey3" class="heracles.data.datasource.ReadWriteDataSourceKey">
+		<property name="readDateSources">
+			<map key-type="java.lang.String">
+				<entry key="read01" value="read01" />
+				<entry key="read02" value="read02" />
+			</map>
+		</property>
+		<property name="writeKey">
+			<value>write</value>
+		</property>
+		<!-- <property name="alwaysReplaceExist" value="false" /> -->
+		<property name="strategy" ref="roundRobinLoadBalanceStrategy3" />
+	</bean>
+
+	<bean id="roundRobinLoadBalanceStrategy3" class="heracles.data.datasource.strategy.RoundRobinLoadBalanceStrategy">
+		<constructor-arg>
+			<map key-type="java.lang.String" value-type="java.lang.Integer">
+				<entry key="read01" value="1" />
+				<entry key="read02" value="1" />
+			</map>
+		</constructor-arg>
+	</bean>
+
+	<bean id="dataSource" class="heracles.data.datasource.RepositoryShardingDataSource">
+		<property name="targetDataSources">
+			<map key-type="java.lang.String">
+				<entry key="rwds1" value-ref="rwds1" />
+				<entry key="rwds2" value-ref="rwds2" />
+				<entry key="rwds3" value-ref="rwds3" />
+			</map>
+		</property>
+		<property name="defaultTargetDataSource" ref="rwds1" />
+	</bean>
+
+	<bean id="transactionManager" class="heracles.data.datasource.SmartDataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- <bean id="transactionInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor">  
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="transactionAttributes">
+			<props>
+				<prop key="get*">PROPAGATION_SUPPORTS,readOnly</prop>
+				<prop key="find*">PROPAGATION_SUPPORTS,readOnly</prop>
+				<prop key="count*">PROPAGATION_SUPPORTS,readOnly</prop>
+				<prop key="save*">PROPAGATION_REQUIRED,-Throwable</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED,-Throwable</prop>
+				<prop key="update*">PROPAGATION_REQUIRED,-Throwable</prop>
+				<prop key="findByIdWithNewReadTrans">PROPAGATION_REQUIRES_NEW,readOnly</prop>
+				<prop key="saveWithNewTrans">PROPAGATION_REQUIRES_NEW,-Throwable</prop>
+				<prop key="deleteByIdWithNewTrans">PROPAGATION_REQUIRES_NEW,-Throwable</prop>
+				<prop key="updateWithNewTrans">PROPAGATION_REQUIRES_NEW,-Throwable</prop>
+				<prop key="*">PROPAGATION_SUPPORTS,readOnly</prop>
+			</props>
+		</property>
+	</bean>   -->
+	
+	<bean id="transactionInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+		</property>
+	</bean>
+	
+	<bean id="transactionAttributeSourceAdvisor" class="org.springframework.transaction.interceptor.TransactionAttributeSourceAdvisor">
+		<property name="transactionInterceptor" ref="transactionInterceptor" />
+	</bean>
+	
+	<!-- <tx:annotation-driven transaction-manager="transactionManager"/> -->
+	<!-- <data:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />    -->
+
+	<!--  
+	<bean id="readWriteDataSourceInterceptor" class="heracles.data.datasource.interceptor.ReadWriteDataSourceInterceptor">
+		<property name="attributes">
+			<props>
+				<prop key="get*">read</prop>
+				<prop key="find*">read</prop>
+				<prop key="count*">read</prop>
+				<prop key="save*">write</prop>
+				<prop key="delete*">write</prop>
+				<prop key="update*">write</prop>
+				<prop key="*">read</prop>
+			</props>
+		</property>
+		<property name="dataSourceKey">
+			<ref bean="readWriteDataSourceKey1" />
+		</property>
+	</bean>
+	-->
+	
+	<bean id="annotationReadWriteDataSourceInterceptor" class="heracles.data.datasource.interceptor.AnnotationReadWriteDataSourceInterceptor">
+		<!--  
+		<property name="dataSourceKey">
+			<ref bean="readWriteDataSourceKey1" />
+		</property>
+		-->
+		<property name="readWriteDataSourceKeys">
+			<map key-type="java.lang.String">
+				<entry key="rwds1" value-ref="readWriteDataSourceKey1" />
+				<entry key="rwds2" value-ref="readWriteDataSourceKey2" />
+				<entry key="rwds3" value-ref="readWriteDataSourceKey3" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="repositoryShardingDataSourceInterceptor" class="heracles.data.datasource.interceptor.RepositoryShardingDataSourceInterceptor">
+		<property name="repositoryShardingStrategies">
+			<ref bean="repositoryShardingStrategies" />
+		</property>
+		<!--  
+		<property name="shardingDataSourceKeys">
+			<map key-type="java.lang.String">
+				<entry key="dataSource1" value-ref="readWriteDataSourceKey1" />
+				<entry key="dataSource2" value-ref="readWriteDataSourceKey2" />
+				<entry key="dataSource3" value-ref="readWriteDataSourceKey3" />
+			</map>
+		</property>
+		-->
+	</bean>
+	
+	<bean id="uuidUniqueId" class="heracles.data.common.id.impl.UUIDUniqueId" />
+	
+	<bean id="shardingKey" class="heracles.data.common.id.impl.ShardingKeyImpl" />
+
+	<bean id="tableShardingDataSourceInterceptor" class="heracles.data.datasource.interceptor.TableShardingDataSourceForCriteriaInterceptor">
+		<property name="tableShardingStrategies">
+			<ref bean="tableShardingStrategies" />
+		</property>
+	</bean>
+	
+	<bean id="userRepositoryShardingStrategy" class="heracles.data.common.strategy.repository.UserRepositoryShardingStrategy">
+	</bean>
+	
+	<bean id="custRepositoryShardingStrategy" class="heracles.data.common.strategy.repository.CustRepositoryShardingStrategy">
+	</bean>
+	
+	<bean id="userTableShardingStrategy" class="heracles.data.common.strategy.table.UserTableShardingStrategy" />
+	
+	<bean id="orderTableShardingStrategy" class="heracles.data.common.strategy.table.OrderTableShardingStrategy" />
+
+	<util:map id="repositoryShardingStrategies">
+		<entry key="user" value-ref="userRepositoryShardingStrategy" />
+		<entry key="cust" value-ref="custRepositoryShardingStrategy" />
+	</util:map>
+	
+	<util:map id="tableShardingStrategies">
+		<entry key="user" value-ref="userTableShardingStrategy" />
+		<entry key="order" value-ref="orderTableShardingStrategy" />
+	</util:map>
+
+	<bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+		<property name="beanNames">
+			<list>
+				<value>*Service</value>
+			</list>
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>repositoryShardingDataSourceInterceptor</value>
+				<!-- <value>readWriteDataSourceInterceptor</value> -->
+				<value>annotationReadWriteDataSourceInterceptor</value>
+				<!-- <value>heracles.data.datasource.test.MyTransactionInterceptor#0</value>  -->
+				<value>transactionInterceptor</value>  
+			</list>
+		</property>
+	</bean>
+	<bean id="orikaBeanMapper" class="heracles.core.beans.mapping.orika.OrikaBeanMapper">
+		<property name="basePackage" value="heracles.data.**"></property>
+	</bean>
+
+	<bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+		<property name="beanNames">
+			<list>
+				<value>*Dao</value>
+			</list>
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>tableShardingDataSourceInterceptor</value>
+			</list>
+		</property>
+	</bean>
+
+	<context:annotation-config />
+
+	<context:component-scan base-package="heracles.data.mybatis.service" />
+	<context:component-scan base-package="heracles.data.mybatis.dao" />
+
+	<bean id="shardingPlugin" class="heracles.data.mybatis.plugin.ShardingPlugin">
+		<property name="sqlConverter" ref="sqlConverter" />
+	</bean>
+
+	<bean id="sqlConverter" class="heracles.data.mybatis.converter.DefaultSqlConverter" />
+
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="heracles.data.mybatis.repository" />
+		<property name="sqlSessionFactoryBeanName" value="msqlSessionFactory" />
+		<property name="annotationClass" value="org.springframework.stereotype.Repository" /> 
+	</bean>
+
+	<bean id="msqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="typeAliasesPackage" value="heracles.data.mybatis.entity" />
+		<property name="mapperLocations" value="classpath*:heracles/data/mybatis/mapper/*Mapper.xml" />
+		<property name="plugins">
+			<array>
+				<ref bean="shardingPlugin" />
+			</array>
+		</property>
+	</bean>
+	
+	<!-- <bean id="proxy" class="org.springframework.jmx.access.MBeanProxyFactoryBean">  
+        <property name="connectOnStartup" value="true" />  
+        <property name="objectName" value="com.alibaba.druid:type=DruidDataSource" />  
+        <property name="proxyInterface">  
+            <value>com.alibaba.druid.pool.DruidDataSourceMBean</value>  
+        </property>  
+        <property name="serviceUrl">  
+            <value>service:jmx:rmi://localhost/jndi/rmi://localhost:1099/jmxrmi</value>  
+        </property>  
+    </bean> -->
+</beans>
