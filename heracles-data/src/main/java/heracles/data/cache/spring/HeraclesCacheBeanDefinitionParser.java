@@ -34,8 +34,7 @@ public class HeraclesCacheBeanDefinitionParser extends
 		PropertiesUtils.getPropsConfig(rootElmt);
 
 		// Parse heracles cache manager element
-		HeraclesCacheElementParser elmtParser = new HeraclesCacheElementParser(
-				rootElmt, pc);
+		HeraclesCacheElementParser elmtParser = new HeraclesCacheElementParser(rootElmt, pc);
 		elmtParser.parse();
 		log.info("Heracles cache - element parse completed!");
 

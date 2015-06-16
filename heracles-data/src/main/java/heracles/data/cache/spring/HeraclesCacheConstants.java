@@ -46,10 +46,10 @@ public interface HeraclesCacheConstants {
 	static final String JEDIS_CONNECTION_FACTORY_CLAZZ = "org.springframework.data.redis.connection.jedis.JedisConnectionFactory";
 
 	static final String REDIS_TEMPLATE = "redisTemplate";
-	static final String REDIS_TWEMPROXY_TEMPLATE_CLAZZ = "io.doeasy.data.cache.redis.core.RedisTwemproxyTemplate";
+	static final String REDIS_TWEMPROXY_TEMPLATE_CLAZZ = "heracles.data.cache.redis.core.RedisTwemproxyTemplate";
 	
 	static final String REDIS_TWEMPROXY_CACHE_MANAGER = "redisTwemproxyCacheManager";
-	static final String REDIS_TWEMPROXY_CACHE_MANAGER_CLAZZ = "io.doeasy.data.cache.redis.RedisTwemproxyCacheManager";
+	static final String REDIS_TWEMPROXY_CACHE_MANAGER_CLAZZ = "heracles.data.cache.redis.RedisTwemproxyCacheManager";
 	static final String DEFAULT_EXPIRATION = "defaultExpiration";
 	
 	static final long DEFAULT_EXPIRATION_VALUE = 0;
@@ -61,7 +61,6 @@ public interface HeraclesCacheConstants {
 	static final String COMPOSITE_CACHE_MANAGER = "org.springframework.cache.support.CompositeCacheManager";
 	
 	// Serializer class
-	//static final String SERIALZER_STRING_CLAZZ = "org.springframework.data.redis.serializer.StringRedisSerializer";
 	static final String SERIALZER_STRING_CLAZZ = "heracles.data.cache.redis.serializer.StringHeraclesRedisSerializer";
 	static final String SERIALZER_JDK_CLAZZ = "org.springframework.data.redis.serializer.JdkSerializationRedisSerializer";
 	static final String SERIALZER_XML_CLAZZ = "org.springframework.data.redis.serializer.OxmSerializer";

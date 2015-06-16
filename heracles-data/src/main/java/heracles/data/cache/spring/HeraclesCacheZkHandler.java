@@ -47,8 +47,7 @@ public class HeraclesCacheZkHandler {
 	}
 
 	public CacheModel getCacheConfig(){
-		// FIXME wjh get partion ....  confirm with zxc    heracles.cfgcenter.partition
-		//partition = ZnodeUtils.resolveSystemProperty("heracles.cfgcenter.partition");
+		// FIXME wd get partion ....  confirm with zxc    heracles.cfgcenter.partition
 		partition = Utils.resolveSystemProperty("heracles.cfgcenter.partition");
 		log.info("Heracles cache - get cache cluster config - partition:{}", partition);
 				
@@ -112,8 +111,7 @@ public class HeraclesCacheZkHandler {
 		try {
 			zkClient = (ZookeeperClient) ZookeeperClientFactory.getClient(cahePath);
 
-			//FIXME wjh, need watch
-			//zkClient.findChildDataAndWatch(path, handlers, file)
+			//FIXME kriswang, need watch
 			String caheJson = zkClient.findChildData(cahePath);
 			log.info("Heracles cache - cache path:{} \nzk configuration: {}", cahePath, caheJson);
 			return caheJson;
@@ -121,7 +119,7 @@ public class HeraclesCacheZkHandler {
 			String errMsg = "Failed to get cache configuration from zk";
 			log.error(errMsg);
 		} finally {
-			// FIXME wjh
+			// FIXME kriswang
 			if (null != zkClient) {
 				zkClient.closeClient();
 			}

@@ -65,7 +65,7 @@ public class DemoService {
 		return orderMap.get(orderId);
 	}
 
-	@CacheEvict(value = "orderCacheCluster")
+	//@CacheEvict(value = "orderCacheCluster")
 	public void deleteOrder(String orderId) {
 		//orderMap.remove(orderId);
 	}

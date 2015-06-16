@@ -44,7 +44,7 @@ public class HeraclesCacheElementParser implements HeraclesCacheConstants {
 
 	private Element rootElmt;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(HeraclesCacheElementParser.class);
+	private static final Logger log = LoggerFactory.getLogger(HeraclesCacheElementParser.class);
 
 	public HeraclesCacheElementParser(Element rootElmt, ParserContext pc) {
 		this.rootElmt = rootElmt;
@@ -65,7 +65,7 @@ public class HeraclesCacheElementParser implements HeraclesCacheConstants {
 		String caheMgmrName = rootElmt.getAttribute(NAME);
 		if (StringUtils.isBlank(caheMgmrName)) {
 			String errMsg = "Failed to get cache manager name, cache manager name is mandatory";
-			LOGGER.error(errMsg);
+			log.error(errMsg);
 			pc.getReaderContext().error(errMsg, pc.extractSource(rootElmt));
 		}
 
@@ -75,7 +75,7 @@ public class HeraclesCacheElementParser implements HeraclesCacheConstants {
 		// Parse caches element
 		parseCachesElmt(caheMgmrMdl);
 
-		LOGGER.info("Element cache-manager:{}", caheMgmrMdl);
+		log.info("Element cache-manager:{}", caheMgmrMdl);
 		return caheMgmrMdl;
 	}
 
@@ -116,7 +116,7 @@ public class HeraclesCacheElementParser implements HeraclesCacheConstants {
 			val = Long.valueOf(caheExpn);
 		} catch (Exception e) {
 			String errMsg = "Failed to get long value, please provide correct expiration long value: " + caheExpn;
-			LOGGER.error(errMsg);
+			log.error(errMsg);
 			pc.getReaderContext().error(errMsg, pc.extractSource(rootElmt));
 		}
 		return val;
@@ -142,7 +142,7 @@ public class HeraclesCacheElementParser implements HeraclesCacheConstants {
 			if (StringUtils.isNotBlank(chldSrlzTypeStr) && StringUtils.isNotBlank(chldSrlzClass)) {
 				String errMsg = "Failed to parse serializer, please provide only type or class in one config entry! type="
 						+ chldSrlzTypeStr + ", class=" + chldSrlzClass;
-				LOGGER.error(errMsg);
+				log.error(errMsg);
 				pc.getReaderContext().error(errMsg, pc.extractSource(rootElmt));
 			}
 
@@ -191,14 +191,6 @@ public class HeraclesCacheElementParser implements HeraclesCacheConstants {
 			return clstMdls;
 		}
 		
-		/*
-		Element clstElmt = DomUtils.getChildElementByTagName(rootElmt, "cache-cluster");
-		if (null == clstElmt) {
-			String errMsg = "Failed to get cache cluster element";
-			LOGGER.error(errMsg);
-			pc.getReaderContext().error(errMsg, pc.extractSource(rootElmt));
-		}
-		*/
 	}
 	
 	private ManagedList<Object> parseSpringBeans(Element cahesElmt) {
@@ -240,20 +232,20 @@ public class HeraclesCacheElementParser implements HeraclesCacheConstants {
 		clstMdl.setPoolConfigModel(parsePoolConfElmt(clstElmt, clstMdl));
 		clstMdl.setSerializerConfigModel(parseSerializerConfig(clstElmt));
 
-		LOGGER.info("Element cache-cluster:{}", clstMdl);
+		log.info("Element cache-cluster:{}", clstMdl);
 		return clstMdl;
 	}
 
 	private void checkCacheClusterAttribute(String name, String clstType, Element clstElmt) {
 		if (StringUtils.isBlank(name)) {
 			String errMsg = "Failed to get cache name";
-			LOGGER.error(errMsg);
+			log.error(errMsg);
 			pc.getReaderContext().error(errMsg, pc.extractSource(clstElmt));
 		}
 
 		if (StringUtils.isBlank(clstType)) {
 			String errMsg = "Failed to get cache type";
-			LOGGER.error(errMsg);
+			log.error(errMsg);
 			pc.getReaderContext().error(errMsg, pc.extractSource(clstElmt));
 		}
 	}
@@ -268,7 +260,7 @@ public class HeraclesCacheElementParser implements HeraclesCacheConstants {
 	private PoolConfigModel parsePoolConfElmt(Element clstElmt, CacheClusterModel clstMdl) {
 		Element poolConfElmt = DomUtils.getChildElementByTagName(clstElmt, "pool-config");
 		if (null == poolConfElmt) {
-			LOGGER.warn("Element pool-config does not exist");
+			log.warn("Element pool-config does not exist");
 			return null;
 		}
 
@@ -276,7 +268,7 @@ public class HeraclesCacheElementParser implements HeraclesCacheConstants {
 		pc.getDelegate().parsePropertyElements(poolConfElmt, propBeanDef);
 		MutablePropertyValues propVals = propBeanDef.getPropertyValues();
 		if (null == propVals || propVals.isEmpty()) {
-			LOGGER.warn("Element pool-config does not have properties");
+			log.warn("Element pool-config does not have properties");
 			return null;
 		}
 
@@ -285,11 +277,11 @@ public class HeraclesCacheElementParser implements HeraclesCacheConstants {
 			poolConfMdl = createRedisPoolConfigModel(propVals);
 		} else {
 			String errMsg = "Unsupported cache cluster type: " + clstMdl.getType();
-			LOGGER.error(errMsg);
+			log.error(errMsg);
 			pc.getReaderContext().error(errMsg, pc.extractSource(clstElmt));
 		}
 
-		LOGGER.info("Element pool-config:{}", poolConfMdl);
+		log.info("Element pool-config:{}", poolConfMdl);
 		return poolConfMdl;
 	}
 

@@ -1,7 +1,5 @@
 package heracles.data.common.id;
 
-import heracles.data.common.id.IdGenerator;
-
 import javax.annotation.Resource;
 
 import org.junit.Assert;

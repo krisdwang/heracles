@@ -46,8 +46,6 @@ public class Utils {
 			String errMsg = "Failed to get enum type, unsupported enum type:" + strType + " for enum:"
 					+ clazz.getName();
 			LOGGER.error(errMsg, e);
-			//Resource resource = new ClassPathResource("mock");
-			//throw new BeanDefinitionParsingException(new Problem("", new Location(resource )));
 			pc.getReaderContext().error(errMsg, null);
 		}
 		return enumType;

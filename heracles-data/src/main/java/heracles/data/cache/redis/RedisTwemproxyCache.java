@@ -14,13 +14,13 @@ import org.springframework.util.Assert;
 @SuppressWarnings("unchecked")
 public class RedisTwemproxyCache implements Cache {
 
-	//private static final int PAGE_SIZE = 128;
 	private final String name;
-	@SuppressWarnings("rawtypes") private final RedisTemplate template;
+	
+	@SuppressWarnings("rawtypes") 
+	private final RedisTemplate template;
+	
 	private final byte[] prefix;
-	//private final byte[] setName;
-	//private final byte[] cacheLockName;
-	//private long WAIT_FOR_LOCK = 300;
+	
 	private final long expiration;
 	
 	public RedisTwemproxyCache(String name, byte[] prefix, RedisTemplate<? extends Object, ? extends Object> template, long expiration) {
@@ -30,12 +30,6 @@ public class RedisTwemproxyCache implements Cache {
 		this.template = template;
 		this.prefix = prefix;
 		this.expiration = expiration;
-
-		//StringRedisSerializer stringSerializer = new StringRedisSerializer();
-
-		// name of the set holding the keys
-		//this.setName = stringSerializer.serialize(name + "~keys");
-		//this.cacheLockName = stringSerializer.serialize(name + "~lock");
 	}
 	
 	@Override
@@ -102,15 +96,6 @@ public class RedisTwemproxyCache implements Cache {
 	@Override
 	public void clear() {
 		throw new UnsupportedOperationException("Failed to clear redis cache, flushAll, flushDb are not supported");
-		/*
-		template.execute(new RedisCallback<Object>() {
-			public Object doInRedis(RedisConnection connection) throws DataAccessException {
-				connection.flushAll();
-				return null;
-			}
-		}, true);
-		*/
-
 	}
 	
 	public ValueWrapper putIfAbsent(Object key, final Object value) {
