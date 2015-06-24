@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cfgdef name="cfgcenter">
+	<group name="provider">
+		<item name="db1的master服务器" key="db1.master.logicname" defaultValue="cfgcenter.db1.master" defaultValueOnly="true" dataType="string" desc="DB1的master服务器" hotReload="false"/>
+		<item name="db1的slave服务器1" key="db1.slave1.logicname" defaultValue="cfgcenter.db1.slave1" defaultValueOnly="true" dataType="string" desc="DB1的slave服务器1" hotReload="false" />
+		<item name="db1的slave服务器2" key="db1.slave2.logicname" defaultValue="cfgcenter.db1.slave2" defaultValueOnly="true" dataType="string" desc="DB1的slave服务器2" hotReload="false" />
+	</group>
+</cfgdef>
