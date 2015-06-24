@@ -18,9 +18,9 @@
 		http://www.springframework.org/schema/util 
 		http://www.springframework.org/schema/util/spring-util-4.0.xsd
 		http://doeasy.io/schema/context 
-		http://doeasy.io/schema/context/heracles-context-1.0.0.xsd
+		http://doeasy.io/schema/context/heracles-context-1.3.0.xsd
 		http://doeasy.io/schema/datasource
-		http://doeasy.io/schema/datasource/heracles-datasource-1.0.0.xsd"
+		http://doeasy.io/schema/datasource/heracles-datasource-1.3.0.xsd"
 	default-autowire="byName">
 	
 	<heracles-context:property-placeholder ignore-resource-not-found="true" location="classpath:/config_mysql_new.properties,classpath:/properties/application.properties">
@@ -69,15 +69,10 @@
 
 	
 	<heracles-datasource:matrix-datasource matrix-name="dataSource1" transactionManager="transactionManager1" myBatisSqlSessionFactory="myBatisSqlSessionFactory111">
-		<heracles-datasource:pool-configs pool-type="dbcp">
+		<heracles-datasource:pool-configs pool-type="c3p0">
 			<heracles-datasource:pool-config atom-names="write01,read101">
-				<heracles-datasource:property name="maxIdle" value="30"/>
-			</heracles-datasource:pool-config>
-			<!--  
-			<heracles-datasource:pool-config atom-names="write02">
-				<heracles-datasource:property name="maxIdle" value="30"/>
-			</heracles-datasource:pool-config>	
-			-->			
+				<!--  <heracles-datasource:property name="maxIdle" value="30"/>-->
+			</heracles-datasource:pool-config>		
 		</heracles-datasource:pool-configs>
 		
 		<heracles-datasource:repository-sharding strategies-package="heracles.data.common.strategy.repository" />
@@ -85,15 +80,6 @@
 		<heracles-datasource:table-sharding strategies-package="heracles.data.common.strategy.table" />  
 	</heracles-datasource:matrix-datasource>
 	
-	<!-- 
-	<heracles-datasource:allinone-datasource matrix-name="xxx">
-		<heracles-datasource:pool-configs pool-type="C3P0">
-			<heracles-datasource:pool-config atom-names="db1_w, db2_w, db3_r">
-			<property name="maxIdleTime" value="30"/>
-			</heracles-datasource:pool-config>
-		</heracles-datasource:pool-configs>
-	</heracles-datasource:allinone-datasource>
-	 -->
 	<context:annotation-config />
 
 	<context:component-scan base-package="heracles.data.mybatis.service" />

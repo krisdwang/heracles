@@ -9,7 +9,7 @@ import heracles.data.datasource.interceptor.TableShardingDataSourceInterceptor;
 import heracles.data.datasource.strategy.LoadBalanceStrategy;
 import heracles.data.mybatis.plugin.ShardingPlugin;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

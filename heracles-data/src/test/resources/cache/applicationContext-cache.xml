@@ -9,35 +9,6 @@
 		http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd"
 	default-lazy-init="true">
 
-	<!-- 
-	<bean id="stringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
-		p:connection-factory-ref="jedisConnectionFactory1" />
-	-->
-
-	<!-- 
-	<bean id="jedis.shardInfo" class="redis.clients.jedis.JedisShardInfo">
-		<constructor-arg index="0" value="192.168.44.19" />
-		<constructor-arg index="1" value="9999" />
-	</bean>
-
-	<bean id="shardedJedisPool" class="redis.clients.jedis.ShardedJedisPool">
-		<constructor-arg index="0" ref="jedisPoolConfig" />
-		<constructor-arg index="1">
-			<list>
-				<ref bean="jedis.shardInfo" />
-			</list>
-		</constructor-arg>
-	</bean>
-
-	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-		<property name="maxActive" value="200" />
-		<property name="maxIdle" value="50" />
-		<property name="maxWait" value="3000" />
-		<property name="testOnBorrow" value="true" />
-	</bean>
-	-->
-
-
 	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
 		<property name="maxTotal" value="200" />
 		<property name="maxIdle" value="50" />
@@ -49,13 +20,8 @@
 
 	<bean id="jedisConnectionFactory1"
 		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
-		<!-- 
+		<property name="hostName" value="localhost" />
 		<property name="port" value="6379" />
-		<property name="usePool" value="true" />
-		<property name="hostName" value="10.101.18.71" />
-		-->
-		<property name="hostName" value="192.168.44.19" />
-		<property name="port" value="9999" />
 		<property name="poolConfig" ref="jedisPoolConfig" />
 	</bean>
 
@@ -73,40 +39,5 @@
 
 	<!-- declare Redis Cache Manager -->
 	<alias name="rdsTmpxyCheMgmr" alias="cacheManager"/>
-	
-	<!-- 
-	<bean id="cacheManager" class="heracles.data.cache.HeraclesCompositeCacheManager">
-		<property name="lbStrategy" value="roundRobin" />
-		<property name="cacheManagers">
-			<list>
-				<ref bean="cacheManager1" />
-				<ref bean="cacheManager2" />
-				<ref bean="cacheManager3" />
-			</list>
-		</property>
-	</bean>
-	-->
-	
-	<!-- 
-	<bean id="jedisConnectionFactory2"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="192.168.44.19" p:port="9999" p:use-pool="true" />
-
-	<bean id="redisTemplate2" class="org.springframework.data.redis.core.RedisTemplate"
-		p:connection-factory-ref="jedisConnectionFactory2" />
-	
-	<bean id="cacheManager2" class="org.springframework.data.redis.cache.RedisCacheManager"
-		c:template-ref="redisTemplate2" />
-		
-	<bean id="jedisConnectionFactory3"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="192.168.44.19" p:port="9999" p:use-pool="true" />
-
-	<bean id="redisTemplate3" class="org.springframework.data.redis.core.RedisTemplate"
-		p:connection-factory-ref="jedisConnectionFactory3" />
-
-	<bean id="cacheManager3" class="org.springframework.data.redis.cache.RedisCacheManager"
-		c:template-ref="redisTemplate3" />
-	-->		
 		
 </beans>

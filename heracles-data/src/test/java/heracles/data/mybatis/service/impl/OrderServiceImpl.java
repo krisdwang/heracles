@@ -1,4 +1,4 @@
-package heracles.mybatis.service.impl;
+package heracles.data.mybatis.service.impl;
 
 import heracles.data.common.annotation.ReadWrite;
 import heracles.data.common.util.ReadWriteType;

@@ -27,13 +27,15 @@ public class RoundRobinLoadBalanceStrategyTest {
 		map.put("b", 3);
 		map.put("c", 2);
 		RoundRobinLoadBalanceStrategy roundRobinLoadBalanceStrategy = new RoundRobinLoadBalanceStrategy(map);
+		
+		Assert.assertEquals("a", roundRobinLoadBalanceStrategy.elect());
+		Assert.assertEquals("a", roundRobinLoadBalanceStrategy.elect());
 		Assert.assertEquals("b", roundRobinLoadBalanceStrategy.elect());
 		Assert.assertEquals("b", roundRobinLoadBalanceStrategy.elect());
 		Assert.assertEquals("b", roundRobinLoadBalanceStrategy.elect());
 		Assert.assertEquals("c", roundRobinLoadBalanceStrategy.elect());
 		Assert.assertEquals("c", roundRobinLoadBalanceStrategy.elect());
-		Assert.assertEquals("a", roundRobinLoadBalanceStrategy.elect());
-		Assert.assertEquals("a", roundRobinLoadBalanceStrategy.elect());
+		
 		Assert.assertEquals(7, roundRobinLoadBalanceStrategy.getTargets().size());
 	}
 
@@ -44,14 +46,16 @@ public class RoundRobinLoadBalanceStrategyTest {
 		map.put("b", 4);
 		map.put("c", 2);
 		RoundRobinLoadBalanceStrategy roundRobinLoadBalanceStrategy = new RoundRobinLoadBalanceStrategy(map);
-		Assert.assertEquals("b", roundRobinLoadBalanceStrategy.elect());
-		Assert.assertEquals("b", roundRobinLoadBalanceStrategy.elect());
-		Assert.assertEquals("c", roundRobinLoadBalanceStrategy.elect());
+		
 		Assert.assertEquals("a", roundRobinLoadBalanceStrategy.elect());
 		Assert.assertEquals("b", roundRobinLoadBalanceStrategy.elect());
 		Assert.assertEquals("b", roundRobinLoadBalanceStrategy.elect());
 		Assert.assertEquals("c", roundRobinLoadBalanceStrategy.elect());
 		Assert.assertEquals("a", roundRobinLoadBalanceStrategy.elect());
+		Assert.assertEquals("b", roundRobinLoadBalanceStrategy.elect());
+		Assert.assertEquals("b", roundRobinLoadBalanceStrategy.elect());
+		Assert.assertEquals("c", roundRobinLoadBalanceStrategy.elect());
+		
 		Assert.assertEquals(4, roundRobinLoadBalanceStrategy.getTargets().size());
 	}
 
@@ -62,12 +66,12 @@ public class RoundRobinLoadBalanceStrategyTest {
 		map.put("b", -1);
 		map.put("c", -1);
 		RoundRobinLoadBalanceStrategy roundRobinLoadBalanceStrategy = new RoundRobinLoadBalanceStrategy(map);
-		Assert.assertEquals("b", roundRobinLoadBalanceStrategy.elect());
-		Assert.assertEquals("c", roundRobinLoadBalanceStrategy.elect());
 		Assert.assertEquals("a", roundRobinLoadBalanceStrategy.elect());
 		Assert.assertEquals("b", roundRobinLoadBalanceStrategy.elect());
 		Assert.assertEquals("c", roundRobinLoadBalanceStrategy.elect());
 		Assert.assertEquals("a", roundRobinLoadBalanceStrategy.elect());
+		Assert.assertEquals("b", roundRobinLoadBalanceStrategy.elect());
+		Assert.assertEquals("c", roundRobinLoadBalanceStrategy.elect());
 		Assert.assertEquals(3, roundRobinLoadBalanceStrategy.getTargets().size());
 	}
 
@@ -78,12 +82,12 @@ public class RoundRobinLoadBalanceStrategyTest {
 		map.put("b", 2);
 		map.put("c", 3);
 		RoundRobinLoadBalanceStrategy roundRobinLoadBalanceStrategy = new RoundRobinLoadBalanceStrategy(map);
-		Assert.assertEquals("b", roundRobinLoadBalanceStrategy.elect());
-		Assert.assertEquals("b", roundRobinLoadBalanceStrategy.elect());
-		Assert.assertEquals("c", roundRobinLoadBalanceStrategy.elect());
-		Assert.assertEquals("c", roundRobinLoadBalanceStrategy.elect());
-		Assert.assertEquals("c", roundRobinLoadBalanceStrategy.elect());
 		Assert.assertEquals("a", roundRobinLoadBalanceStrategy.elect());
+		Assert.assertEquals("b", roundRobinLoadBalanceStrategy.elect());
+		Assert.assertEquals("b", roundRobinLoadBalanceStrategy.elect());
+		Assert.assertEquals("c", roundRobinLoadBalanceStrategy.elect());
+		Assert.assertEquals("c", roundRobinLoadBalanceStrategy.elect());
+		Assert.assertEquals("c", roundRobinLoadBalanceStrategy.elect());
 		Assert.assertEquals(6, roundRobinLoadBalanceStrategy.getTargets().size());
 		roundRobinLoadBalanceStrategy.removeTarget("b");
 		Assert.assertEquals(4, roundRobinLoadBalanceStrategy.getTargets().size());
@@ -94,11 +98,11 @@ public class RoundRobinLoadBalanceStrategyTest {
 		Assert.assertEquals(4, roundRobinLoadBalanceStrategy.getTargets().size());
 		roundRobinLoadBalanceStrategy.recoverTarget("b");
 		Assert.assertEquals(6, roundRobinLoadBalanceStrategy.getTargets().size());
-		Assert.assertEquals("b", roundRobinLoadBalanceStrategy.elect());
-		Assert.assertEquals("b", roundRobinLoadBalanceStrategy.elect());
-		Assert.assertEquals("c", roundRobinLoadBalanceStrategy.elect());
-		Assert.assertEquals("c", roundRobinLoadBalanceStrategy.elect());
-		Assert.assertEquals("c", roundRobinLoadBalanceStrategy.elect());
 		Assert.assertEquals("a", roundRobinLoadBalanceStrategy.elect());
+		Assert.assertEquals("b", roundRobinLoadBalanceStrategy.elect());
+		Assert.assertEquals("b", roundRobinLoadBalanceStrategy.elect());
+		Assert.assertEquals("c", roundRobinLoadBalanceStrategy.elect());
+		Assert.assertEquals("c", roundRobinLoadBalanceStrategy.elect());
+		Assert.assertEquals("c", roundRobinLoadBalanceStrategy.elect());
 	}
 }

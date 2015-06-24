@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 /**
  * 分库和分表策略注解
  * 
- * @author kriswang Zhu
+ * @author kriswang
  * 
  */
 @Target({ ElementType.TYPE })

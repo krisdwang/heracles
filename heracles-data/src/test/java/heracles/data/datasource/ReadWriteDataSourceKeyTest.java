@@ -17,7 +17,7 @@ public class ReadWriteDataSourceKeyTest {
 	@Resource(name = "readWriteDataSourceKey1")
 	private ReadWriteDataSourceKey readWriteDataSourceKey;
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
 		Assert.assertTrue(readWriteDataSourceKey.hasReadKey());

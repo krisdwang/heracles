@@ -31,7 +31,7 @@ public class HeraclesCacheBeanDefinitionParserTest {
 		final String key2 = "2002";
 		final String value2 = "marycary";
 
-		CacheManager cacheManager = (CacheManager) applicationContext.getBean("cacheManager");
+		CacheManager cacheManager = (CacheManager) applicationContext.getBean("redisCacheManager");
 		Cache orderCache = cacheManager.getCache("orderCacheCluster");
 
 		orderCache.put(key1, value1);

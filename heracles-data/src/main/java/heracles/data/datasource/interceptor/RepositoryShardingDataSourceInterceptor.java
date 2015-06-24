@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public class RepositoryShardingDataSourceInterceptor implements MethodInterceptor, InitializingBean, ApplicationContextAware {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(RepositoryShardingDataSourceInterceptor.class);
+	private static final Logger log = LoggerFactory.getLogger(RepositoryShardingDataSourceInterceptor.class);
 
 	/**
 	 * key : sharding strategy name, value : RepositoryShardingStrategy instance
@@ -42,13 +42,10 @@ public class RepositoryShardingDataSourceInterceptor implements MethodIntercepto
 
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
-		// TODO kriswang 删除掉
-		// Long startTime = System.currentTimeMillis();
-
 		String debugInfo = "[" + invocation.toString() + "]";
 
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("get into repository sharding data source interceptor" + debugInfo);
+		if (log.isDebugEnabled()) {
+			log.debug("get into repository sharding data source interceptor" + debugInfo);
 		}
 
 		Method method = invocation.getThis().getClass().getMethod(invocation.getMethod().getName(), invocation.getMethod().getParameterTypes());
@@ -70,8 +67,8 @@ public class RepositoryShardingDataSourceInterceptor implements MethodIntercepto
 
 			repositoryShardingStrategy = repositoryShardingStrategyMap.get(strategy);
 		} else {
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("repository sharding annotation is null" + debugInfo);
+			if (log.isDebugEnabled()) {
+				log.debug("repository sharding annotation is null" + debugInfo);
 			}
 		}
 
@@ -82,35 +79,31 @@ public class RepositoryShardingDataSourceInterceptor implements MethodIntercepto
 		}
 
 		if (StrategyHolder.getRepositoryShardingKey() == null) {
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("repository sharding strategy is null in StrategyHolder" + debugInfo);
+			if (log.isDebugEnabled()) {
+				log.debug("repository sharding strategy is null in StrategyHolder" + debugInfo);
 			}
 
 			StrategyHolder.setRepositoryShardingKey(repositoryShardingStrategy.getReadWriteDataSource(obj));
 		} else {
 			if (Propagation.REQUIRES_NEW.equals(annotationTx.propagation())
-			// || Propagation.NESTED.equals(annotationTx.propagation())
 					|| Propagation.NEVER.equals(annotationTx.propagation())) {
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("repository sharding strategy is null in StrategyHolder" + debugInfo);
+				if (log.isDebugEnabled()) {
+					log.debug("repository sharding strategy is null in StrategyHolder" + debugInfo);
 				}
 
 				StrategyHolder.setRepositoryShardingKey(repositoryShardingStrategy.getReadWriteDataSource(obj));
 			} else {
-				// FIXME AZEN 策略不同抛异常
+				// FIXME kris 策略不同抛异常
 				if (!StrategyHolder.getRepositoryShardingKey().equals(repositoryShardingStrategy.getReadWriteDataSource(obj))) {
 					throw new IllegalArgumentException("repository sharding key of current method is diffrent with parent method!");
 				} 
-//				else {
-//					StrategyHolder.setRepositoryShardingKey(repositoryShardingStrategy.getReadWriteDataSource(obj));
-//				}
 			}
 		}
 
 		Object object = invocation.proceed();
 
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("get out repository sharding data source interceptor" + debugInfo);
+		if (log.isDebugEnabled()) {
+			log.debug("get out repository sharding data source interceptor" + debugInfo);
 		}
 
 		return object;

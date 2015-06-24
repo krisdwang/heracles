@@ -16,7 +16,7 @@ import org.springframework.util.Assert;
 
 public class RoundRobinLoadBalanceStrategy implements LoadBalanceStrategy<String> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(RoundRobinLoadBalanceStrategy.class);
+	private static final Logger log = LoggerFactory.getLogger(RoundRobinLoadBalanceStrategy.class);
 
 	private static final int MIN_LB_FACTOR = 1;
 
@@ -36,9 +36,8 @@ public class RoundRobinLoadBalanceStrategy implements LoadBalanceStrategy<String
 
 	private void reInitTargets(Map<String, Integer> lbFactors) {
 		targets = initTargets(lbFactors);
-		// Assert.notEmpty(targets);
 		if (CollectionUtils.isEmpty(targets)) {
-			LOGGER.error("targets is empty");
+			log.error("targets is empty");
 		}
 		currentPos = 0;
 	}

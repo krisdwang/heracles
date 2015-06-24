@@ -135,7 +135,7 @@ public class MatrixDatasourceBeanDefinitionParserTest {
 	@Test
 	public void testParser() {
 		System.out.println(">>>>>>>>>>>>>>>>>>>>>>rwds1:" + applicationContext.getBean("rwds1").getClass());
-		System.out.println(">>>>>>>>>>>>>>>>>>>>>>rwds2:" + applicationContext.getBean("rwds2").getClass());
+		//System.out.println(">>>>>>>>>>>>>>>>>>>>>>rwds2:" + applicationContext.getBean("rwds2").getClass());
 
 		System.out.println(">>>>>>>>>>>>>>>>>>>>>>rwds1_write:" + applicationContext.getBean("rwds1_write").getClass());
 		System.out.println(">>>>>>>>>>>>>>>>>>>>>>rwds1_read0:" + applicationContext.getBean("rwds1_read0").getClass());

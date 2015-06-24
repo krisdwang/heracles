@@ -76,7 +76,6 @@ public class RedisTwemproxyCache implements Cache {
 				if (expiration > 0) {
 					connection.expire(keyBytes, expiration);
 				}
-				//connection.exec();
 				return null;
 			}
 		}, true);

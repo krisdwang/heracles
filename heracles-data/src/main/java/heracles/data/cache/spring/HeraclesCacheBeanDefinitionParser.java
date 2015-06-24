@@ -26,8 +26,7 @@ public class HeraclesCacheBeanDefinitionParser extends
 	private static final Logger log = LoggerFactory.getLogger(HeraclesCacheBeanDefinitionParser.class);
 
 	@Override
-	protected AbstractBeanDefinition parseInternal(Element rootElmt,
-			ParserContext pc) {
+	protected AbstractBeanDefinition parseInternal(Element rootElmt, ParserContext pc) {
 		/**
 		 * init all props
 		 */
@@ -40,14 +39,14 @@ public class HeraclesCacheBeanDefinitionParser extends
 
 		// Get cache cluster configuration from local or zk
 		CacheManagerModel caheMgmrMdl = elmtParser.getCacheManagerModel();
-		List<CacheClusterModel> caheClstMdls = caheMgmrMdl
-				.getCacheClusterModels();
+		List<CacheClusterModel> caheClstMdls = caheMgmrMdl.getCacheClusterModels();
+		
 		for (CacheClusterModel caheClstMdl : caheClstMdls) {
-			HeraclesCacheZkHandler caheZkHdlr = new HeraclesCacheZkHandler(
-					caheClstMdl.getClusterName(), caheClstMdl.getType(), pc);
+			HeraclesCacheZkHandler caheZkHdlr = new HeraclesCacheZkHandler(caheClstMdl.getClusterName(), caheClstMdl.getType(), pc);
 			CacheModel cacheModel = caheZkHdlr.getCacheConfig();
 			caheClstMdl.setCacheModel(cacheModel);
 		}
+		
 		log.info("Heracles cache - get cache cluster configuration completed!");
 
 		// Build Heracles cache bean definition

@@ -31,21 +31,6 @@
 			
 			<heracles-cache:cache-cluster name="redis-cluster-01" type="redis" >
 			</heracles-cache:cache-cluster>
-			<!-- 
-			<bean class="org.springframework.cache.concurrent.ConcurrentMapCacheManager">
-				<constructor-arg>
-					<array>
-						<value>orderCacheCluster</value>
-						<value>tradeCacheCluster</value>
-						<value>productCacheCluster</value>
-					</array>
-				</constructor-arg>
-			</bean>
-			<bean id="cacheManager"
-	      		class="org.springframework.cache.ehcache.EhCacheCacheManager">
-	      		<property name="cacheManager" ref="ehcache" />
-	      	</bean>
-			-->
 		</heracles-cache:caches>
 	</heracles-cache:cache-manager>
 	

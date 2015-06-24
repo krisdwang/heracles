@@ -27,7 +27,7 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 public class RepositoryShardingDataSource extends AbstractRoutingDataSource implements
 		RepositoryShardingDataSourceMBean {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(RepositoryShardingDataSource.class);
+	private static final Logger log = LoggerFactory.getLogger(RepositoryShardingDataSource.class);
 
 	private Set<String> markDownSet = new CopyOnWriteArraySet<String>();
 
@@ -35,8 +35,8 @@ public class RepositoryShardingDataSource extends AbstractRoutingDataSource impl
 	protected Object determineCurrentLookupKey() {
 
 		String key = StrategyHolder.getRepositoryShardingKey();
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("real key is " + key);
+		if (log.isDebugEnabled()) {
+			log.debug("real key is " + key);
 		}
 
 		if (key != null && markDownSet.contains(key)) {
@@ -63,18 +63,18 @@ public class RepositoryShardingDataSource extends AbstractRoutingDataSource impl
 				objectName = new ObjectName("io.doeasy.data:type=" + this.toString());
 				if (!mbeanServer.isRegistered(objectName)) {
 					mbeanServer.registerMBean(this, objectName);
-					if (LOGGER.isDebugEnabled()) {
-						LOGGER.debug("io.doeasy.data:type=" + this.toString() + " registered successfully");
+					if (log.isDebugEnabled()) {
+						log.debug("io.doeasy.data:type=" + this.toString() + " registered successfully");
 					}
 				}
 			} catch (InstanceAlreadyExistsException e) {
-				LOGGER.error(e.getMessage());
+				log.error(e.getMessage());
 			} catch (MBeanRegistrationException e) {
-				LOGGER.error(e.getMessage());
+				log.error(e.getMessage());
 			} catch (NotCompliantMBeanException e) {
-				LOGGER.error(e.getMessage());
+				log.error(e.getMessage());
 			} catch (MalformedObjectNameException e) {
-				LOGGER.error(e.getMessage());
+				log.error(e.getMessage());
 			}
 		}
 	}

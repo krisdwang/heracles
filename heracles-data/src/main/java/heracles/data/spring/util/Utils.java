@@ -18,7 +18,7 @@ import org.springframework.util.PathMatcher;
 
 public class Utils {
 
-	// TODO kriswang Zhu 后期通过Properties实现
+	// TODO kriswang 后期通过Properties实现
 	// private final static Properties PROP = new Properties();
 	// private final static Logger LOGGER = LoggerFactory.getLogger(Utils.class);
 	//

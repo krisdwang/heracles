@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 /**
  * 读写分离注解
  * 
- * @author kriswang Zhu
+ * @author kriswang
  * 
  */
 @Target({ ElementType.METHOD })

@@ -42,7 +42,7 @@ public class StrategyHolder {
 	public static void removeRepositoryShardingStrategy() {
 		Stack<ShardingStrategy> stack = REPOSITORY_SHARDING_STRATEGY_STACK.get();
 		if (CollectionUtils.isEmpty(stack)) {
-			// FIXME AZEN 此处请报错
+			// FIXME kris 此处请报错
 			REPOSITORY_SHARDING_STRATEGY_STACK.remove();
 			return;
 		}
@@ -58,7 +58,7 @@ public class StrategyHolder {
 	public static void clearDataSourceKey() {
 		Stack<ShardingStrategy> stack = REPOSITORY_SHARDING_STRATEGY_STACK.get();
 		if (CollectionUtils.isEmpty(stack)) {
-			// FIXME AZEN 此处请报错
+			// FIXME kris 此处请报错
 			REPOSITORY_SHARDING_STRATEGY_STACK.remove();
 			return;
 		}
@@ -76,7 +76,7 @@ public class StrategyHolder {
 	public static void setDataSourceKey(String key) {
 		Stack<ShardingStrategy> stack = REPOSITORY_SHARDING_STRATEGY_STACK.get();
 		if (CollectionUtils.isEmpty(stack)) {
-			// FIXME AZEN 此处请报错
+			// FIXME kris 此处请报错
 			stack = new Stack<ShardingStrategy>();
 			ShardingStrategy strategy = new ShardingStrategy();
 			strategy.setDataSourceKey(key);
@@ -93,7 +93,7 @@ public class StrategyHolder {
 	public static String getDataSourceKey() {
 		Stack<ShardingStrategy> stack = REPOSITORY_SHARDING_STRATEGY_STACK.get();
 		if (CollectionUtils.isEmpty(stack)) {
-			// FIXME AZEN 此处请报错
+			// FIXME kris 此处请报错
 			return null;
 		}
 		ShardingStrategy strategy = stack.peek();

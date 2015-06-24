@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 /**
  * 分表注解
  * 
- * @author kriswang Zhu
+ * @author kriswang
  * 
  */
 @Target({ ElementType.METHOD })

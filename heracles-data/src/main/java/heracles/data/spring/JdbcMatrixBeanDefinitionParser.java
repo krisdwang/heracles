@@ -76,7 +76,7 @@ public class JdbcMatrixBeanDefinitionParser implements BeanDefinitionParser, Con
 			PropertyHolder.addProperties(loadRemoteResourceProperties(dsZkPathList));
 		}
 
-		// TODO DataSourceConfigManager watch zk by lusong
+		// TODO DataSourceConfigManager watch zk by kriswang
 
 		return null;
 	}
@@ -252,8 +252,6 @@ public class JdbcMatrixBeanDefinitionParser implements BeanDefinitionParser, Con
 							REPOSITORY_SHARDING_STRATEGIES,
 							scanRepositoryStrategies(scan, repositoryShardingMetaVO.getStrategiesPackage(),
 									defaultReadWrite));
-					// repositoryShardingDataSourceInterceptor.getPropertyValues().add(DEFAULT_DATASOURCE,
-					// defaultReadWrite);
 					parserContext.getRegistry().registerBeanDefinition(REPOSITORY_SHARDING_DATASOURCE_INTERCEPTOR,
 							repositoryShardingDataSourceInterceptor);
 					interceptorNames.add(REPOSITORY_SHARDING_DATASOURCE_INTERCEPTOR);
@@ -278,9 +276,7 @@ public class JdbcMatrixBeanDefinitionParser implements BeanDefinitionParser, Con
 					RootBeanDefinition transactionInterceptor = new RootBeanDefinition(TransactionInterceptor.class);
 					transactionInterceptor.getPropertyValues().add(TRANSACTION_MANAGER,
 							new RuntimeBeanReference(dataSourceMetaVO.getTransactionManager()));
-					// transactionInterceptor.getPropertyValues().add(TRANSACTION_ATTRIBUTE_SOURCE, new
-					// BeanDefinitionHolder(new RootBeanDefinition(AnnotationTransactionAttributeSource.class),
-					// TRANSACTION_ATTRIBUTE_SOURCE));
+					
 					transactionInterceptor.getPropertyValues().add(TRANSACTION_ATTRIBUTE_SOURCE,
 							new RuntimeBeanReference(TRANSACTION_ATTRIBUTE_SOURCE));
 					parserContext.getRegistry().registerBeanDefinition(TRANSACTION_INTERCEPTOR, transactionInterceptor);
@@ -307,7 +303,7 @@ public class JdbcMatrixBeanDefinitionParser implements BeanDefinitionParser, Con
 					// annotationTransactionAttributeSource
 					RootBeanDefinition annotationTransactionAttributeSource = new RootBeanDefinition(
 							AnnotationTransactionAttributeSource.class);
-					// TODO kriswang Zhu what's mean
+					// TODO kriswang what's mean
 					// annotationTransactionAttributeSource.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 					parserContext.getRegistry().registerBeanDefinition(TRANSACTION_ATTRIBUTE_SOURCE,
 							annotationTransactionAttributeSource);
@@ -318,7 +314,7 @@ public class JdbcMatrixBeanDefinitionParser implements BeanDefinitionParser, Con
 							dataSourceMetaVO.getTransactionManager());
 					transactionInterceptor.getPropertyValues().add(TRANSACTION_ATTRIBUTE_SOURCE,
 							new RuntimeBeanReference(TRANSACTION_ATTRIBUTE_SOURCE));
-					// transactionInterceptor.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+
 					parserContext.getRegistry().registerBeanDefinition(TRANSACTION_INTERCEPTOR, transactionInterceptor);
 
 					// transactionAttributeSourceAdvisor
@@ -328,15 +324,13 @@ public class JdbcMatrixBeanDefinitionParser implements BeanDefinitionParser, Con
 							new RuntimeBeanReference(TRANSACTION_ATTRIBUTE_SOURCE));
 					transactionAttributeSourceAdvisor.getPropertyValues()
 							.add(ADVICE_BEAN_NAME, TRANSACTION_INTERCEPTOR);
-					// transactionAttributeSourceAdvisor.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-					// String txAdvisorBeanName = TransactionManagementConfigUtils.TRANSACTION_ADVISOR_BEAN_NAME;
+
 					parserContext.getRegistry().registerBeanDefinition(TRANSACTION_ATTRIBUTE_SOURCE_ADVISOR,
 							transactionAttributeSourceAdvisor);
 
 					RootBeanDefinition beanDefinition = new RootBeanDefinition(
 							AnnotationAwareAspectJAutoProxyCreator.class);
-					// beanDefinition.getPropertyValues().add("order", Ordered.HIGHEST_PRECEDENCE);
-					// beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+
 					parserContext.getRegistry().registerBeanDefinition(ANNOTATION_AWARE_ASPECTJ_AUTO_PROXY_CREATOR,
 							beanDefinition);
 				}
@@ -396,7 +390,7 @@ public class JdbcMatrixBeanDefinitionParser implements BeanDefinitionParser, Con
 			BeanDefinitionHolder beanDefinitionHolder = it.next();
 			Class<?> clazz = null;
 			try {
-				// TODO kriswang Zhu 下面方式不太好
+				// TODO kriswang 下面方式不太好
 				clazz = Class.forName(beanDefinitionHolder.getBeanDefinition().getBeanClassName());
 			} catch (ClassNotFoundException e) {
 				LOGGER.error(e.getMessage());
@@ -424,9 +418,8 @@ public class JdbcMatrixBeanDefinitionParser implements BeanDefinitionParser, Con
 			BeanDefinitionHolder beanDefinitionHolder = it.next();
 			Class<?> clazz = null;
 			try {
-				// TODO kriswang Zhu 下面方式不太好
+				// TODO kriswang 下面方式不太好
 				BeanDefinition beanDefinition = beanDefinitionHolder.getBeanDefinition();
-				// beanDefinition.getPropertyValues().add(DEFAULT_DATASOURCE, defaultDataSource);
 				clazz = Class.forName(beanDefinition.getBeanClassName());
 			} catch (ClassNotFoundException e) {
 				LOGGER.error(e.getMessage());

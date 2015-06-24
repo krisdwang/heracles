@@ -171,13 +171,13 @@ public class OrderServiceTest {
 		page = orderService.findPageWithNewTrans(order, pageable);
 		Assert.assertEquals(2, page.getTotalPages());
 		Assert.assertEquals(3, page.getTotalElements());
-		Assert.assertTrue(page.hasPreviousPage());
-		Assert.assertFalse(page.isFirstPage());
-		Assert.assertFalse(page.hasNextPage());
-		Assert.assertTrue(page.isLastPage());
-		Assert.assertEquals(1, page.getContent().size());
-		Assert.assertEquals(1, page.getNumber());
-		Assert.assertEquals(1, page.getNumberOfElements());
+		Assert.assertFalse(page.hasPreviousPage());
+		Assert.assertTrue(page.isFirstPage());
+		Assert.assertTrue(page.hasNextPage());
+		Assert.assertFalse(page.isLastPage());
+		Assert.assertEquals(2, page.getContent().size());
+		Assert.assertEquals(0, page.getNumber());
+		Assert.assertEquals(2, page.getNumberOfElements());
 
 		orderService.deleteById(1L);
 		orderService.deleteById(3L);

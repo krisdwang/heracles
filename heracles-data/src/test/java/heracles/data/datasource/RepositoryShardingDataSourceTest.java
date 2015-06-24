@@ -5,7 +5,7 @@ import org.junit.Test;
 
 public class RepositoryShardingDataSourceTest {
 
-	//@Test(expected = RuntimeException.class)
+	@Test
 	public void test1() {
 		
 		RepositoryShardingDataSource repositoryShardingDataSource = new RepositoryShardingDataSource();
