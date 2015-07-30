@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns="http://doeasy.io/schema/jdbc"  
+	elementFormDefault="qualified"
+	targetNamespace="http://doeasy.io/schema/jdbc">
+
+	<xs:element name="property">
+		<xs:complexType>
+			<xs:attribute name="value" use="required" type="xs:string"/>
+			<xs:attribute name="name" use="required" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="pool-config">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="atom-names" use="required" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="pool-configs">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="pool-config" minOccurs="1" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="pool-type" default="c3p0">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="druid"/>
+						<xs:enumeration value="dbcp"/>
+						<xs:enumeration value="c3p0"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="allinone-datasource">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="pool-configs" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="matrix-name" use="required" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>		
+	
+</xs:schema>
