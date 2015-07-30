@@ -23,8 +23,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- * 使用MyBatis和JDBC两种方式在72上测试Matrix
- * @author Anders Zhu
+ * 使用MyBatis和JDBC两种方式上测试Matrix
+ * @author kriswang
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
