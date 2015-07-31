@@ -1,0 +1,49 @@
+#group 1
+USE jdbc1_master;
+TRUNCATE TABLE cust_0;
+TRUNCATE TABLE cust_1;
+TRUNCATE TABLE cust;
+TRUNCATE TABLE tb_order_0;
+TRUNCATE TABLE tb_order_1;
+TRUNCATE TABLE tb_order;
+
+USE jdbc1_slave1;
+TRUNCATE TABLE cust_0;
+TRUNCATE TABLE cust_1;
+TRUNCATE TABLE cust;
+TRUNCATE TABLE tb_order_0;
+TRUNCATE TABLE tb_order_1;
+TRUNCATE TABLE tb_order;
+
+USE jdbc1_slave2;
+TRUNCATE TABLE cust_0;
+TRUNCATE TABLE cust_1;
+TRUNCATE TABLE cust;
+TRUNCATE TABLE tb_order_0;
+TRUNCATE TABLE tb_order_1;
+TRUNCATE TABLE tb_order;
+
+#group 2
+USE jdbc2_master;
+TRUNCATE TABLE cust_0;
+TRUNCATE TABLE cust_1;
+TRUNCATE TABLE cust;
+TRUNCATE TABLE tb_order_0;
+TRUNCATE TABLE tb_order_1;
+TRUNCATE TABLE tb_order;
+
+USE jdbc2_slave1;
+TRUNCATE TABLE cust_0;
+TRUNCATE TABLE cust_1;
+TRUNCATE TABLE cust;
+TRUNCATE TABLE tb_order_0;
+TRUNCATE TABLE tb_order_1;
+TRUNCATE TABLE tb_order;
+
+USE jdbc2_slave2;
+TRUNCATE TABLE cust_0;
+TRUNCATE TABLE cust_1;
+TRUNCATE TABLE cust;
+TRUNCATE TABLE tb_order_0;
+TRUNCATE TABLE tb_order_1;
+TRUNCATE TABLE tb_order;

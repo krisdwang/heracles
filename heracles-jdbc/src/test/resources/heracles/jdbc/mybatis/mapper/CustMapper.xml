@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="heracles.jdbc.mybatis.repository.CustMapper" >
+  <resultMap id="BaseResultMap" type="heracles.jdbc.mybatis.entity.Cust" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, name
+  </sql>
+  
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from cust
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <delete id="deleteById" parameterType="java.lang.Long" >
+    delete from cust
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  <insert id="insert" parameterType="heracles.jdbc.mybatis.entity.Cust" >
+    insert cust (id, name)
+    value (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="update" parameterType="heracles.jdbc.mybatis.entity.Cust" >
+    update cust
+    set name = #{name,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="selectByIds" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from cust
+    where id in 
+	<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+  	#{item}  
+ 	</foreach> 
+  </select>
+  
+  <select id="selectBy" resultMap="BaseResultMap" parameterType="heracles.jdbc.mybatis.entity.Cust" >
+    select 
+    <include refid="Base_Column_List" />
+    from cust
+    where id = #{id,jdbcType=BIGINT} and name = #{name}
+  </select>
+  
+  <select id="selectByConstant" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from cust
+    where id = 5 and name = '51'
+  </select>
+  
+  <!-- <select id="selectByJoin" resultMap="BaseResultMap" >
+    select 
+    c.id id, c.name name
+    from cust c join tb_order o 
+    on c.id = o.id
+    where c.id = 5 and o.id = 5
+  </select> -->
+  
+  <select id="selectByJoin" resultMap="BaseResultMap" >
+    select 
+    c.id id, c.name name
+    from cust c, tb_order o 
+    where c.id in (5,6,7,8,9) and c.id = o.id
+  </select>
+  
+  <select id="selectCount" resultType="int" parameterType="java.lang.Long">
+    select 
+    count(*)
+    from cust
+    where id in 
+	<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+  	#{item}  
+ 	</foreach> 
+  </select>
+  
+  <select id="selectMax" resultType="int" parameterType="java.lang.Long">
+    select 
+    max(id)
+    from cust
+    where id in 
+	<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+  	#{item}  
+ 	</foreach> 
+  </select>
+  
+  <select id="selectMin" resultType="int" parameterType="java.lang.Long">
+    select 
+    min(id)
+    from cust
+    where id in 
+	<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+  	#{item}  
+ 	</foreach> 
+  </select>
+  
+  <select id="selectAvg" resultType="bigdecimal" parameterType="java.lang.Long">
+    select 
+    avg(id)
+    from cust
+    where id in 
+	<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+  	#{item}  
+ 	</foreach> 
+  </select>
+  
+  <select id="selectSum" resultType="int" parameterType="java.lang.Long">
+    select 
+    sum(id)
+    from cust
+    where id in 
+	<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+  	#{item}  
+ 	</foreach> 
+  </select>
+  
+  <select id="selectFuns" resultType="map" parameterType="java.lang.Long">
+  	/* hint force_read */
+    select 
+    sum(id) sumf, avg(id) as avgf, max(id) maxf, min(id) as minf, count(*) as counts, count(id) as countf
+    from cust
+    where id in 
+	<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+  	#{item}  
+ 	</foreach> 
+  </select>
+  
+  <!-- <select id="selectByJoin" resultMap="BaseResultMap" >
+    select 
+    c.id id, c.name name
+    from cust c join tb_order o 
+    on c.id = o.id
+    where c.id = 5 
+  </select> -->
+  
+  <!--  
+  <insert id="insertA" useGeneratedKeys="true" keyProperty="id" parameterType="heracles.jdbc.mybatis.entity.Cust">  
+    insert into cust (id, name)
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR})  
+  </insert>
+  -->
+</mapper>
