@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:venus-context="http://doeasy.io/schema/context" xmlns:venus-datasource="http://doeasy.io/schema/datasource"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.6.xsd
+		http://doeasy.io/schema/context http://doeasy.io/schema/context/venus-context-1.0.0.xsd
+		http://doeasy.io/schema/datasource http://doeasy.io/schema/datasource/venus-datasource-1.0.0.xsd"
+	default-autowire="byName">
+	
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath*:config_local.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- group 1 -->
+	<bean id="dataSource1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="url" value="${db1.master.url}" />
+		<property name="username" value="${db1.master.username}" />
+		<property name="password" value="${db1.master.password}" />
+		<property name="driverClassName" value="${db1.master.driver}" />
+		<property name="initialSize" value="3" />
+		<property name="minIdle" value="3" />
+		<property name="maxActive" value="5" />
+		<property name="maxWait" value="1000" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<property name="validationQuery" value="SELECT 1 FROM DUAL" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="100" />
+	</bean>
+	
+	<bean id="dataSource" class="heracles.jdbc.atom.AtomDataSource">
+		<property name="targetDataSource" ref="dataSource1" />
+		<property name="rules" ref="ruleList" />
+	</bean>
+	<bean id="rule1" class="heracles.jdbc.matrix.model.RuleModel">
+		<property name="tableNames" value="*" />
+		<property name="groupShardRule" value="((#id# as int).intValue() % 4).intdiv(2)" />
+		<property name="groupIndex" value="ds1,ds2" />
+		<property name="tableShardRule" value="(#id# as int).intValue() % 2" />
+		<property name="tableSuffix" value="_0,_1" />
+	</bean>
+	<bean id="ruleList" class="heracles.jdbc.matrix.model.RuleListModel">
+		<property name="ruleList">
+            <list>
+                <ref bean="rule1" />
+            </list>
+        </property>
+	</bean>
+	
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="heracles.jdbc.mybatis.repository" />
+		<property name="sqlSessionFactoryBeanName" value="msqlSessionFactory" />
+	</bean>
+
+	<bean id="msqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="typeAliasesPackage" value="heracles.jdbc.mybatis.entity" />
+		<property name="mapperLocations" value="classpath*:com/vip/venus/jdbc/mybatis/mapper/*Mapper.xml" />
+	</bean>
+	
+	<context:component-scan base-package="heracles.jdbc.mybatis.service" />
+	<context:component-scan base-package="heracles.jdbc.mybatis.dao" />
+	
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
+</beans>

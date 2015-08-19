@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 /**
  * user repository sharding strategy
  * 
- * @author Anders
+ * @author kriswang
  * 
  */
 @Strategy("user")
@@ -18,7 +18,6 @@ public class UserRepositoryShardingStrategy extends RepositoryShardingStrategy {
 
 	@Override
 	public String getReadWriteDataSource(Object obj) {
-		//Long value = (Long) StrategyHolder.getShardingParameterValue();
 		Long value = (Long) obj;
 		if (value != null && value > 100 && value <= 200) {
 			logger.debug("sharding datasource switch to dataSource2");
@@ -28,9 +27,6 @@ public class UserRepositoryShardingStrategy extends RepositoryShardingStrategy {
 			logger.debug("sharding datasource switch to dataSource3");
 			return "rwds3";
 		}
-
-//		logger.debug("sharding datasource switch to " + getDefaultDataSource());
-//		return getDefaultDataSource();
 		return null;
 	}
 }

@@ -8,7 +8,7 @@ import org.springframework.util.Assert;
 /**
  * user table sharding strategy
  * 
- * @author Anders
+ * @author kriswang
  * 
  */
 @Strategy("user")

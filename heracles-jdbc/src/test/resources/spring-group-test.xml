@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:data="http://www.anders.com/schema/data"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-4.0.xsd 
+		http://www.springframework.org/schema/util 
+		http://www.springframework.org/schema/util/spring-util-4.0.xsd
+		http://www.anders.com/schema/data 
+		http://www.anders.com/schema/data/anders-data-1.0.xsd"
+	default-autowire="byName">
+
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath*:config_remote_ms.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="dataSource1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="url" value="${db1.master.url}" />
+		<property name="username" value="${db1.master.username}" />
+		<property name="password" value="${db1.master.password}" />
+		<property name="driverClassName" value="${db1.master.driver}" />
+		<property name="initialSize" value="3" />
+		<property name="minIdle" value="3" />
+		<property name="maxActive" value="5" />
+		<property name="maxWait" value="1000" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<property name="validationQuery" value="SELECT 1 FROM DUAL" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="100" />
+	</bean>
+	
+	<bean id="dataSource2" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="url" value="${db1.slave1.url}" />
+		<property name="username" value="${db1.slave1.username}" />
+		<property name="password" value="${db1.slave1.password}" />
+		<property name="driverClassName" value="${db1.slave1.driver}" />
+		<property name="initialSize" value="3" />
+		<property name="minIdle" value="3" />
+		<property name="maxActive" value="5" />
+		<property name="maxWait" value="1000" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<property name="validationQuery" value="SELECT 1 FROM DUAL" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="100" />
+	</bean>
+	
+	<bean id="dataSource3" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="url" value="${db1.slave2.url}" />
+		<property name="username" value="${db1.slave2.username}" />
+		<property name="password" value="${db1.slave2.password}" />
+		<property name="driverClassName" value="${db1.slave2.driver}" />
+		<property name="initialSize" value="3" />
+		<property name="minIdle" value="3" />
+		<property name="maxActive" value="5" />
+		<property name="maxWait" value="1000" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+		<property name="validationQuery" value="SELECT 1 FROM DUAL" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="100" />
+	</bean>
+	
+	<bean id="dataSource" class="heracles.jdbc.group.GroupDataSource">
+		<property name="targetDataSources">
+			<map key-type="java.lang.String">
+				<entry key="write" value-ref="dataSource1" />
+				<entry key="read01" value-ref="dataSource2" />
+				<entry key="read02" value-ref="dataSource3" />
+			</map>
+		</property>
+		<property name="lbStrategy" ref="roundRobinLoadBalanceStrategy" />
+		<property name="rules" ref="ruleList" />
+	</bean>
+	<bean id="rule1" class="heracles.jdbc.matrix.model.RuleModel">
+		<property name="tableNames" value="*" />
+		<property name="groupShardRule" value="((#id# as int).intValue() % 4).intdiv(2)" />
+		<property name="groupIndex" value="ds1,ds2" />
+		<property name="tableShardRule" value="(#id# as int).intValue() % 2" />
+		<property name="tableSuffix" value="_0,_1" />
+	</bean>
+	<bean id="ruleList" class="heracles.jdbc.matrix.model.RuleListModel">
+		<property name="ruleList">
+            <list>
+                <ref bean="rule1" />
+            </list>
+        </property>
+	</bean>
+	
+	<bean id="roundRobinLoadBalanceStrategy" class="heracles.jdbc.group.strategy.RoundRobinLoadBalanceStrategy">
+		<constructor-arg>
+			<map key-type="java.lang.String" value-type="java.lang.Integer">
+				<entry key="read01" value="1" />
+				<entry key="read02" value="1" />
+			</map>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="randomLoadBalanceStrategy" class="heracles.jdbc.group.strategy.RandomLoadBalanceStrategy">
+		<constructor-arg>
+			<list>
+				<value>read01</value>
+				<value>read02</value>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="heracles.jdbc.mybatis.repository" />
+		<property name="sqlSessionFactoryBeanName" value="msqlSessionFactory" />
+	</bean>
+
+	<bean id="msqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="typeAliasesPackage" value="heracles.jdbc.mybatis.entity" />
+		<property name="mapperLocations" value="classpath*:heracles/jdbc/mybatis/mapper/*Mapper.xml" />
+	</bean>
+	
+	<context:component-scan base-package="heracles.jdbc.mybatis.service" />
+	<context:component-scan base-package="heracles.jdbc.mybatis.repository" />
+	
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
+</beans>

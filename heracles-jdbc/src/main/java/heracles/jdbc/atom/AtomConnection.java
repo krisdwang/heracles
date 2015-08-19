@@ -84,7 +84,7 @@ public class AtomConnection implements Connection {
 		this.targetConnection = DataSourceUtils.getConnection(this.atomDataSource.getTargetDataSource());
 	}
 
-	// FIXME AZEN getConnection(username, password)
+	// FIXME kriswang getConnection(username, password)
 	public AtomConnection(AtomDataSource atomDataSource, String username, String password) throws SQLException {
 		this.atomDataSource = atomDataSource;
 //		this.targetConnection = this.atomDataSource.getTargetDataSource().getConnection(username, password);

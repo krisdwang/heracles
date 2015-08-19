@@ -8,7 +8,7 @@ import org.springframework.util.Assert;
 /**
  * order table sharding strategy
  * 
- * @author Anders
+ * @author kriswang
  * 
  */
 @Strategy("order")

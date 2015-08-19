@@ -31,7 +31,8 @@ public class PropertyChangedDispatcherTest {
 	private void initClient() {
 		nodeCache = mock(NodeCache.class);
 		try {
-			when(nodeCache.getCurrentData()).thenReturn(new ChildData(anyString(), (Stat)any(), (byte[])any()));
+			//when(nodeCache.getCurrentData()).thenReturn(new ChildData("/"+anyString(), (Stat)any(), (byte[])any()));
+			when(nodeCache.getCurrentData()).thenReturn(mock(ChildData.class));
 			when(nodeCache.getCurrentData().getData()).thenReturn("abc=def".getBytes());
 		} catch (Exception e) {
 			e.printStackTrace();

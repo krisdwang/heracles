@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:heracles-context="http://doeasy.io/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:heracles-jdbc="http://doeasy.io/schema/jdbc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://doeasy.io/schema/context 
+		http://doeasy.io/schema/context/heracles-context-1.3.0.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-4.0.xsd 
+		http://www.springframework.org/schema/util 
+		http://www.springframework.org/schema/util/spring-util-4.0.xsd
+		http://doeasy.io/schema/jdbc
+		http://doeasy.io/schema/jdbc/heracles-jdbc-1.3.0.xsd"
+	default-autowire="byName">
+	
+	<heracles-context:property-placeholder ignore-resource-not-found="true" location="classpath:allinone2.properties"/>
+	
+	<heracles-jdbc:allinone-datasource matrix-name="matrixdataSource">
+		<heracles-jdbc:pool-configs pool-type="druid">
+			<heracles-jdbc:pool-config atom-names="write,read01,read02">
+				<heracles-jdbc:property name="maxIdle" value="30"/>
+			</heracles-jdbc:pool-config>
+			
+			<heracles-jdbc:pool-config atom-names="write,read01,read02">
+				<heracles-jdbc:property name="maxIdle" value="30"/>
+			</heracles-jdbc:pool-config>
+		</heracles-jdbc:pool-configs>
+	</heracles-jdbc:allinone-datasource>
+
+	
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="heracles.jdbc.mybatis.repository" />
+		<property name="sqlSessionFactoryBeanName" value="msqlSessionFactory" />
+	</bean>
+
+	<bean id="msqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="typeAliasesPackage" value="heracles.jdbc.mybatis.entity" />
+		<property name="mapperLocations" value="classpath*:heracles/jdbc/mybatis/mapper/*Mapper.xml" />
+	</bean>
+	
+	<context:component-scan base-package="heracles.jdbc.mybatis.service" />
+	<context:component-scan base-package="heracles.jdbc.mybatis.repository" />
+	
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
+</beans>

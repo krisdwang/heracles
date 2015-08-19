@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 /**
  * cust repository sharding strategy
  * 
- * @author Anders
+ * @author kriswang
  * 
  */
 @Strategy("depart")

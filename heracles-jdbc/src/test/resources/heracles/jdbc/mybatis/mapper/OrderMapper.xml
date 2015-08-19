@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="heracles.jdbc.mybatis.repository.OrderMapper" >
+  <resultMap id="BaseResultMap" type="heracles.jdbc.mybatis.entity.Order" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, name
+  </sql>
+  
+  <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_order
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <delete id="deleteById" parameterType="java.lang.Long" >
+    delete from tb_order
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  
+  <insert id="insert" parameterType="heracles.jdbc.mybatis.entity.Order" >
+    insert into tb_order (id, name)
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="update" parameterType="heracles.jdbc.mybatis.entity.Order" >
+    update tb_order
+    set name = #{name,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="selectByIds" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_order
+    where id in 
+	<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+  	#{item}  
+ 	</foreach> 
+  </select>
+  
+  <select id="selectBy" resultMap="BaseResultMap" parameterType="heracles.jdbc.mybatis.entity.Order" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_order
+    where id = #{id,jdbcType=BIGINT} and name = #{name}
+  </select>
+  
+  <select id="selectByConstant" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_order
+    where id = 5 and name = '51'
+  </select>
+  
+  <!--  
+  <insert id="insertA" useGeneratedKeys="true" keyProperty="id" parameterType="heracles.jdbc.mybatis.entity.Order">  
+    insert into order (id, name)
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR})  
+  </insert>
+  -->
+</mapper>

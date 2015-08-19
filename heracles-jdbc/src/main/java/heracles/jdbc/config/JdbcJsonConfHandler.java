@@ -21,8 +21,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-
-
 /**
  * 
  * @author kriswang
@@ -60,12 +58,8 @@ public class JdbcJsonConfHandler {
 		String jdbcPath = createJdbcResourcePath();
 		String jdbcJson = readJdbcConfigFromLocal(jdbcPath);
 		
-		//FIXME AZEN 暂未考虑 config from zookeeper
+		//FIXME kris 暂未考虑 config from zookeeper
 		jdbcPath = "/" + partition + jdbcPath;
-//		String jdbcJsonFrmZk = readJdbcConfigFromZK(jdbcPath);
-//		if (StringUtils.isNotBlank(jdbcJsonFrmZk)) {
-//			jdbcJson = jdbcJsonFrmZk;
-//		}
 		
 		if (StringUtils.isBlank(jdbcJson)) {
 			String errMsg = "Failed to get jdbc config, either from local properties or zk";

@@ -9,18 +9,6 @@ import heracles.data.common.util.Constants;
  * 
  */
 public abstract class RepositoryShardingStrategy implements Constants {
-
-//	private String defaultDataSource;
-//
-//	
-//
-//	public String getDefaultDataSource() {
-//		return defaultDataSource;
-//	}
-//
-//	public void setDefaultDataSource(String defaultDataSource) {
-//		this.defaultDataSource = defaultDataSource;
-//	}
 	
 	public abstract String getReadWriteDataSource(Object obj);
 
