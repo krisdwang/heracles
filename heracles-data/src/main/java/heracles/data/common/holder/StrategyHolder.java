@@ -19,14 +19,17 @@ public class StrategyHolder {
 	 */
 	private static final ThreadLocal<Map<String, TableShardingStrategy>> TABLE_SHARDING_STRATEGIES = new ThreadLocal<Map<String, TableShardingStrategy>>();
 
-	public static void setRepositoryShardingKey(String key) {
+	public static synchronized void setRepositoryShardingKey(String key) {
 		Stack<ShardingStrategy> stack = REPOSITORY_SHARDING_STRATEGY_STACK.get();
 		if (stack == null) {
 			stack = new Stack<ShardingStrategy>();
 		}
+		
 		ShardingStrategy strategy = new ShardingStrategy();
 		strategy.setRepositoryShardingKey(key);
-		stack.push(strategy);
+		if(!stack.contains(strategy)) {
+			stack.push(strategy);
+		}
 		REPOSITORY_SHARDING_STRATEGY_STACK.set(stack);
 	}
 
